@@ -1,0 +1,20 @@
+body{
+    background-color: blanchedalmond;
+}
+.Headers{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(64, 234, 247);
+    width: 50%;
+    height: 5%;
+    top: 0;
+    left: 25%;
+    position: fixed;
+    border-radius: 80%;
+}
+.Headers img{
+    width: 20%;
+    height: auto;
+}

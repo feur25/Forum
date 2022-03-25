@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"time"
 
 	// "go/types"
 	"html/template"
@@ -18,6 +19,7 @@ import (
 type Auth struct {
 	username string
 	password string
+	time     string
 }
 
 var tmpl = template.Must(template.ParseGlob("static/html/*.html"))
@@ -54,9 +56,10 @@ func encrypt(plainText string) string {
 }
 
 /*('127','AxelSeven','axelsevenet@gmail.com',true,'"0616694403"','Axel','Sevenet','6 Butte des 3 Moulins','JesuisDieu05!',25/03/2022)*/
-func createUser(id string, username string, email string, phone string, firstName string, lastName string, address string) error {
-	db, _ := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test_forum")
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `utilisateur`(`user_id`, `username`, `email`, `phone_number`, `first_name`, `last_name`, `address`) VALUES ('%s','%s','%s','%s','%s','%s','%s')", id, username, email, phone, firstName, lastName, address))
+func createUser(id string, username string, email string, phone string, firstName string, lastName string, address string, date string, password string, admin int) error {
+	var datetime = time.Now().UTC().Format("2006-01-02 03:04:05")
+	data.time = datetime
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `utilisateur`(`user_id`, `username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `creation_date`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s','%s', '%s', '%s', '%d')", id, username, email, phone, firstName, lastName, address, datetime, password, admin))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -67,7 +70,7 @@ func createUser(id string, username string, email string, phone string, firstNam
 }
 
 func userLogin(username, password string) ([]string, error) {
-	selectQuery, err := db.Query(fmt.Sprintf("SELECT * INTO `users` WHERE username = `%s` OR email = `%s` LIMIT 1", username, username))
+	selectQuery, err := db.Query(fmt.Sprintf("SELECT * INTO `utilisateur` WHERE username = `%s` OR email = `%s` LIMIT 1", username, username))
 	checkError(err)
 
 	columns, err := selectQuery.Columns()
@@ -122,17 +125,14 @@ func checkPasswordValidity(password string) bool {
 }
 
 func main() {
+	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test_forum")
 	fmt.Println("Go Mysql Tutorial")
-	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/go_easy")
-	checkError(err)
 	defer db.Close()
-	createUser("125", "AxelSeven2", "axelsevenet2@gmail.com", "0616694403", "Axel", "Sevenet", "6 Butte des 3 Moulins")
-	userLogin("AxelSeven", "mabite")
-	userLogin("axelsevenet@gmail.com", "mabite")
+	createUser("126", "AxelSeven5", "axelsevenet5@gmail.com", "0616694403", "Axel", "Sevenet", "6 Butte des 3 Moulins", data.time, "mabite", 3)
+	/*userLogin("AxelSeven3", "mabite")
+	userLogin("axelsevenet3@gmail.com", "mabite")*/
 
 	fmt.Println("La connection a bien été établie")
-
-	checkError(err)
 
 	fmt.Print("Nice")
 

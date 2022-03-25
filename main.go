@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"time"
 
 	// "go/types"
 	"html/template"
@@ -54,17 +53,19 @@ func encrypt(plainText string) string {
 	return string(encryptedText[:])
 }
 
-func createUser(username, email, password, phone, firstName, lastName, address string, admin bool) error {
-	if !checkPasswordValidity(password) {
-		return errors.New("password not valid")
+/*('127','AxelSeven','axelsevenet@gmail.com',true,'"0616694403"','Axel','Sevenet','6 Butte des 3 Moulins','JesuisDieu05!',25/03/2022)*/
+func createUser(id string, username string, email string, phone string, firstName string, lastName string, address string) error {
+	db, _ := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test_forum")
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `utilisateur`(`user_id`, `username`, `email`, `phone_number`, `first_name`, `last_name`, `address`) VALUES ('%s','%s','%s','%s','%s','%s','%s')", id, username, email, phone, firstName, lastName, address))
+	if err != nil {
+		panic(err.Error())
 	}
-	dt := time.Now()
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `users`(`username`, `email`, `password`, `phone_number`, `first_name`, `last_name`, `address`, `is_admin`, `creation_data`) VALUES ('%s','%s', %s,'%s','%s','%s','%s','%t', `%s`)", username, email, encrypt(password), phone, firstName, lastName, address, admin, dt.Format("yyyy-mm-dd")))
-	checkError(err)
-	insert.Close()
+	defer insert.Close()
+	fmt.Print("Mission réusise")
 
 	return nil
 }
+
 func userLogin(username, password string) ([]string, error) {
 	selectQuery, err := db.Query(fmt.Sprintf("SELECT * INTO `users` WHERE username = `%s` OR email = `%s` LIMIT 1", username, username))
 	checkError(err)
@@ -125,16 +126,13 @@ func main() {
 	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/go_easy")
 	checkError(err)
 	defer db.Close()
-
-	createUser("AxelSeven", "axelsevenet@gmail.com", "mabite", "0616694403", "Axel", "Sevenet", "6 Butte des 3 Moulins", true)
+	createUser("125", "AxelSeven2", "axelsevenet2@gmail.com", "0616694403", "Axel", "Sevenet", "6 Butte des 3 Moulins")
 	userLogin("AxelSeven", "mabite")
 	userLogin("axelsevenet@gmail.com", "mabite")
 
 	fmt.Println("La connection a bien été établie")
 
-	insert, err := db.Query("INSERT INTO `products`(`productCode`, `productName`, `productLine`, `productScale`, `productVendor`, `productDescription`, `quantityInStock`, `buyPrice`, `MSRP`) VALUES ('S10_1100','humberger','Planes','1:18','Motor City Art Classics ','American supersonic, twin-engine, two-seat, twin-tail, variable-sweep wing fighter aircraft ',200,88.20,175)")
 	checkError(err)
-	insert.Close()
 
 	fmt.Print("Nice")
 
@@ -149,8 +147,6 @@ func main() {
 
 	imageServer := http.FileServer(http.Dir("static/images"))
 	http.Handle("/images/", http.StripPrefix("/images/", imageServer))
-
-	tmpl = template.Must(template.ParseGlob("html/*.html"))
 
 	http.HandleFunc("/", handleFunc)
 }

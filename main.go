@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 	"time"
 
 	// "go/types"
@@ -17,9 +18,15 @@ import (
 )
 
 type Auth struct {
-	username string
-	password string
-	time     string
+	username   string
+	password   string
+	time       string
+	adress     string
+	phone      string
+	email      string
+	first_name string
+	last_name  string
+	id         int
 }
 
 var tmpl = template.Must(template.ParseGlob("static/html/*.html"))
@@ -31,14 +38,8 @@ const (
 	containsLowerCase = "^[a-z]$"
 	containsNumber    = "^[0-9]$"
 	containsSpecial   = `^[-+_!@#$%^&*.,?\/\\]$`
+	normal_user       = 0
 )
-
-func userAuth(w http.ResponseWriter, r *http.Request) {
-	data.username = r.FormValue("username")
-	data.password = r.FormValue("password")
-
-	userLogin(data.username, data.password)
-}
 
 func handleFunc(w http.ResponseWriter, r *http.Request) {
 
@@ -123,14 +124,44 @@ func checkPasswordValidity(password string) bool {
 
 	return true
 }
+func checkemail(email string) bool {
+	if !strings.Contains(data.email, "@") {
+		return false
+	}
+	if !strings.Contains(data.email, ".") {
+		return false
+	}
+	return true
+}
+func user_create(w http.ResponseWriter, r *http.Request) {
+	data.username = r.FormValue("username")
+	data.password = r.FormValue("password")
+	data.adress = r.FormValue("address")
+	data.phone = r.FormValue("phone")
+	data.email = r.FormValue("email")
+	data.first_name = r.FormValue("first_name")
+	data.last_name = r.FormValue("last_name")
+	if len(data.username) >= 4 && checkPasswordValidity(data.password) && len(data.adress) != 0 && len(data.phone) >= 10 && checkemail(data.email) && len(data.first_name) >= 4 && len(data.last_name) >= 3 {
+		createUser(string(rune(data.id)), data.username, data.email, data.phone, data.first_name, data.last_name, data.adress, data.time, data.password, normal_user)
+	}
+	tmpl.Execute(w, data)
+}
+
+func userAuth(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	log.Print(username)
+	log.Print(password)
+	userLogin(data.username, data.password)
+}
 
 func main() {
 	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test_forum")
 	fmt.Println("Go Mysql Tutorial")
 	defer db.Close()
-	createUser("126", "AxelSeven5", "axelsevenet5@gmail.com", "0616694403", "Axel", "Sevenet", "6 Butte des 3 Moulins", data.time, "mabite", 3)
-	/*userLogin("AxelSeven3", "mabite")
-	userLogin("axelsevenet3@gmail.com", "mabite")*/
+	http.HandleFunc("/register", user_create)
+	userLogin("AxelSeven3", "mabite")
+	userLogin("axelsevenet3@gmail.com", "mabite")
 
 	fmt.Println("La connection a bien été établie")
 

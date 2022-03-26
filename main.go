@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -39,6 +40,8 @@ const (
 	containsNumber    = "^[0-9]$"
 	containsSpecial   = `^[-+_!@#$%^&*.,?\/\\]$`
 	normal_user       = 0
+	Port              = "4447"
+	Host              = "localhost"
 )
 
 func handleFunc(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +59,6 @@ func encrypt(plainText string) string {
 	return string(encryptedText[:])
 }
 
-/*('127','AxelSeven','axelsevenet@gmail.com',true,'"0616694403"','Axel','Sevenet','6 Butte des 3 Moulins','JesuisDieu05!',25/03/2022)*/
 func createUser(id string, username string, email string, phone string, firstName string, lastName string, address string, date string, password string, admin int) error {
 	var datetime = time.Now().UTC().Format("2006-01-02 03:04:05")
 	data.time = datetime
@@ -71,7 +73,7 @@ func createUser(id string, username string, email string, phone string, firstNam
 }
 
 func userLogin(username, password string) ([]string, error) {
-	selectQuery, err := db.Query(fmt.Sprintf("SELECT * INTO `utilisateur` WHERE username = `%s` OR email = `%s` LIMIT 1", username, username))
+	selectQuery, err := db.Query(fmt.Sprintf("SELECT * FROM `utilisateur` WHERE username = `%s` OR email = `%s` LIMIT 1", username, username))
 	checkError(err)
 
 	columns, err := selectQuery.Columns()
@@ -134,6 +136,9 @@ func checkemail(email string) bool {
 	return true
 }
 func user_create(w http.ResponseWriter, r *http.Request) {
+	register := template.Must(template.ParseFiles("static/html/register.html"))
+	data.id += 10
+	id := strconv.Itoa(data.id)
 	data.username = r.FormValue("username")
 	data.password = r.FormValue("password")
 	data.adress = r.FormValue("address")
@@ -141,27 +146,37 @@ func user_create(w http.ResponseWriter, r *http.Request) {
 	data.email = r.FormValue("email")
 	data.first_name = r.FormValue("first_name")
 	data.last_name = r.FormValue("last_name")
-	if len(data.username) >= 4 && checkPasswordValidity(data.password) && len(data.adress) != 0 && len(data.phone) >= 10 && checkemail(data.email) && len(data.first_name) >= 4 && len(data.last_name) >= 3 {
-		createUser(string(rune(data.id)), data.username, data.email, data.phone, data.first_name, data.last_name, data.adress, data.time, data.password, normal_user)
+	if len(data.username) >= 4 && len(data.adress) != 0 && len(data.phone) >= 10 && checkemail(data.email) && len(data.first_name) >= 4 && len(data.last_name) >= 3 {
+		createUser(id, data.username, data.email, data.phone, data.first_name, data.last_name, data.adress, data.time, data.password, normal_user)
+		http.Redirect(w, r, "http://"+Host+":"+Port+"/login", 301)
 	}
-	tmpl.Execute(w, data)
+	register.Execute(w, data)
 }
-
+func Handle404(w http.ResponseWriter, r *http.Request) {
+	Error := template.Must(template.ParseFiles("static/html/error.html"))
+	errors := r.FormValue("click")
+	if errors == "Accueil" {
+		http.Redirect(w, r, "http://"+Host+":"+Port+"/home", 301)
+	}
+	log.Print(errors)
+	Error.Execute(w, r)
+}
 func userAuth(w http.ResponseWriter, r *http.Request) {
+	login := template.Must(template.ParseFiles("static/html/login.html"))
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-	log.Print(username)
+	log.Print("\n" + username)
 	log.Print(password)
-	userLogin(data.username, data.password)
+	userLogin(username, password)
+	login.Execute(w, data)
 }
 
 func main() {
 	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test_forum")
 	fmt.Println("Go Mysql Tutorial")
 	defer db.Close()
-	http.HandleFunc("/register", user_create)
-	userLogin("AxelSeven3", "mabite")
-	userLogin("axelsevenet3@gmail.com", "mabite")
+	/*userLogin("AxelSeven3", "mabite")
+	userLogin("axelsevenet3@gmail.com", "mabite")*/
 
 	fmt.Println("La connection a bien été établie")
 
@@ -169,6 +184,9 @@ func main() {
 
 	pageServer := http.FileServer(http.Dir("static/html"))
 	http.Handle("/html/", http.StripPrefix("/html/", pageServer))
+	http.HandleFunc("/register", user_create)
+	http.HandleFunc("/login", userAuth)
+	http.HandleFunc("/", Handle404)
 
 	styleServer := http.FileServer(http.Dir("static/css"))
 	http.Handle("/css/", http.StripPrefix("/css/", styleServer))
@@ -178,6 +196,8 @@ func main() {
 
 	imageServer := http.FileServer(http.Dir("static/images"))
 	http.Handle("/images/", http.StripPrefix("/images/", imageServer))
+	print("Lancement de la page instancier sur : " + Host + ":" + Port + "/register")
+	http.ListenAndServe(Host+":"+Port, nil)
 
 	http.HandleFunc("/", handleFunc)
 }

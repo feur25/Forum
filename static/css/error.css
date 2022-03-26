@@ -1,0 +1,109 @@
+body{
+    background-color: #343a40;
+    background-image: url("img/fondun.png");
+}
+h1{
+    color: bisque;
+    font-size:10rem;
+}
+h2{
+    color: rgb(255, 252, 249);
+    font-family: Arial, Helvetica, sans-serif;
+}
+.text input{
+    width: 20vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+.text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin-top: 25vh;
+}
+.text input{
+    align-items: center;
+    margin-left:39.5vw;
+    background-color: #555758;
+    border-radius: 20%;
+    height: auto;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+    background-image: url("img/fondun.png");
+    background-color: transparent;
+    border: transparent;
+}
+input:hover{
+    cursor: pointer;
+    animation-name: transition;
+    animation-duration: 2s;
+}
+@keyframes transition {
+    0% {height: auto; font-size: 48px;}
+    10% {height: 18px;}
+    30% {height: 19px;}
+    50% {height: 24px;}
+    70% {height: 29px;}
+    100% {height: 35px;}
+  }
+
+.txt {
+  text-align: center;
+  font-family: 'Roboto';
+  font-size: 12vmin;
+  font-weight: 700;
+  animation: netflix_style 3.5s infinite;
+  outline: none;
+  white-space: nowrap;
+}
+
+@keyframes netflix_style {
+  15% {
+     color:#f3f3f3;
+  }
+  75% {
+    opacity: 1;
+  }
+  
+  100% {
+    opacity: 0;
+  }
+}
+.text {
+  width: 100vw;
+  text-align: center;
+}
+  .text h1 {
+    font-size: 100px;
+    text-shadow: 0 0px #adaa9f, 0 0px #f7caca;
+    transform: translate(0, 50%) rotate(10deg);
+    animation: jump 2s ease-in-out infinite;
+    font-family: "Titan One", cursive;
+    color: bisque;
+  }
+@keyframes jump {
+  33% {
+    text-shadow: 0 60px #f3dedf;
+  }
+  50% {
+    transform: translate(0, 0) rotate(-10deg);
+    text-shadow: 0 0px #babdbb, 0 0px #969c9c;
+  }
+  66.67% {
+    text-shadow: 0 -60px #585455;
+  }
+}
+@media screen and (max-height: 200px) {
+  .text {
+    transform: scale(0.3,0.3);
+  }
+}
+@media screen and (max-width: 576px) {
+  .text span {
+      font-size: 50px;
+  }
+}

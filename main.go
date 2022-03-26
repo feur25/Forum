@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -27,7 +26,6 @@ type Auth struct {
 	email      string
 	first_name string
 	last_name  string
-	id         int
 }
 
 var tmpl = template.Must(template.ParseGlob("static/html/*.html"))
@@ -40,7 +38,7 @@ const (
 	containsNumber    = "^[0-9]$"
 	containsSpecial   = `^[-+_!@#$%^&*.,?\/\\]$`
 	normal_user       = 0
-	Port              = "4447"
+	Port              = "4448"
 	Host              = "localhost"
 )
 
@@ -59,10 +57,10 @@ func encrypt(plainText string) string {
 	return string(encryptedText[:])
 }
 
-func createUser(id string, username string, email string, phone string, firstName string, lastName string, address string, date string, password string, admin int) error {
+func createUser(username string, email string, phone string, firstName string, lastName string, address string, date string, password string, admin int) error {
 	var datetime = time.Now().UTC().Format("2006-01-02 03:04:05")
 	data.time = datetime
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `utilisateur`(`user_id`, `username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `creation_date`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s','%s', '%s', '%s', '%d')", id, username, email, phone, firstName, lastName, address, datetime, password, admin))
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `utilisateur`(`username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `creation_date`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s', '%s', '%s', '%d')", username, email, phone, firstName, lastName, address, datetime, password, admin))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -73,14 +71,14 @@ func createUser(id string, username string, email string, phone string, firstNam
 }
 
 func userLogin(username, password string) ([]string, error) {
-	selectQuery, err := db.Query(fmt.Sprintf("SELECT * FROM `utilisateur` WHERE username = `%s` OR email = `%s` LIMIT 1", username, username))
+	selectQuery, err := db.Query(fmt.Sprintf("SELECT * FROM `utilisateur` WHERE username = '%s' OR email = '%s' LIMIT 1", username, username))
 	checkError(err)
 
 	columns, err := selectQuery.Columns()
 	checkError(err)
 	fmt.Println(columns)
 
-	if columns[3] != encrypt(password) {
+	if columns[9] != password {
 		return []string{}, errors.New("wrong Password")
 	}
 
@@ -137,8 +135,6 @@ func checkemail(email string) bool {
 }
 func user_create(w http.ResponseWriter, r *http.Request) {
 	register := template.Must(template.ParseFiles("static/html/register.html"))
-	data.id += 10
-	id := strconv.Itoa(data.id)
 	data.username = r.FormValue("username")
 	data.password = r.FormValue("password")
 	data.adress = r.FormValue("address")
@@ -147,7 +143,7 @@ func user_create(w http.ResponseWriter, r *http.Request) {
 	data.first_name = r.FormValue("first_name")
 	data.last_name = r.FormValue("last_name")
 	if len(data.username) >= 4 && len(data.adress) != 0 && len(data.phone) >= 10 && checkemail(data.email) && len(data.first_name) >= 4 && len(data.last_name) >= 3 {
-		createUser(id, data.username, data.email, data.phone, data.first_name, data.last_name, data.adress, data.time, data.password, normal_user)
+		createUser(data.username, data.email, data.phone, data.first_name, data.last_name, data.adress, data.time, data.password, normal_user)
 		http.Redirect(w, r, "http://"+Host+":"+Port+"/login", 301)
 	}
 	register.Execute(w, data)
@@ -167,7 +163,10 @@ func userAuth(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	log.Print("\n" + username)
 	log.Print(password)
-	userLogin(username, password)
+	envoyer := r.FormValue("submit")
+	if envoyer == "Envoyer" {
+		userLogin(username, password)
+	}
 	login.Execute(w, data)
 }
 
@@ -175,8 +174,6 @@ func main() {
 	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test_forum")
 	fmt.Println("Go Mysql Tutorial")
 	defer db.Close()
-	/*userLogin("AxelSeven3", "mabite")
-	userLogin("axelsevenet3@gmail.com", "mabite")*/
 
 	fmt.Println("La connection a bien été établie")
 

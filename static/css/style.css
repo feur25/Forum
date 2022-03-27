@@ -1,20 +1,19 @@
 body{
     background-color: blanchedalmond;
 }
-.Headers{
+.register{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgb(64, 234, 247);
-    width: 50%;
-    height: 5%;
-    top: 0;
-    left: 25%;
-    position: fixed;
-    border-radius: 80%;
 }
-.Headers img{
+.register img{
     width: 20%;
     height: auto;
+}
+.register i{
+    margin-left: 9%;
+}
+.register i:hover{
+    cursor: pointer;
 }

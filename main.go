@@ -78,9 +78,18 @@ func userLogin(username, password string) ([]string, error) {
 	checkError(err)
 	fmt.Println(columns)
 
-	if columns[9] != password {
+	if columns[8] == password {
+		fmt.Println("\ngood Password")
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "http://"+Host+":"+Port+"/home", 301)
+		})
+	}
+
+	if columns[8] != password {
+		fmt.Println("\nwrong Password")
 		return []string{}, errors.New("wrong Password")
 	}
+	log.Print(columns[8])
 
 	selectQuery.Close()
 

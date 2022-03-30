@@ -12,9 +12,9 @@ import (
 )
 
 type Auth struct {
+	user_id    string
 	username   string
 	password   string
-	time       string
 	adress     string
 	phone      string
 	email      string
@@ -22,45 +22,86 @@ type Auth struct {
 	last_name  string
 }
 
+type GoogleUser struct {
+	ID            string `json:"id"`
+	Email         string `json:"email"`
+	VerifiedEmail bool   `json:"verified_email"`
+	Name          string `json:"name"`
+	GivenName     string `json:"given_name"`
+	FamilyName    string `json:"family_name"`
+	Picture       string `json:"picture"`
+	Locale        string `json:"locale"`
+}
+
 var tmpl = template.Must(template.ParseGlob("static/html/*.html"))
 var db *sql.DB
 var data Auth = Auth{}
 
 const (
-	containsUpperCase = "^[A-Z]$"
-	containsLowerCase = "^[a-z]$"
-	containsNumber    = "^[0-9]$"
-	containsSpecial   = `^[-+_!@#$%^&*.,?\/\\]$`
-	normal_user       = 0
-	Port              = "4448"
-	Host              = "localhost"
+	isValidEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+	normal_user  = 0
+	Port         = "4444"
+	Host         = "localhost"
 )
 
-func checkError(err error) {
+func checkErrorPanic(err error) {
 	if err != nil {
 		panic(err.Error())
 	}
 }
+func checkErrorLogout(err error) bool {
+	if err != nil {
+		log.Println(err.Error())
+		data = Auth{}
+		return true
+	}
+	return false
+}
+func checkError(err error) bool {
+	if err != nil {
+		log.Println(err.Error())
+		return true
+	}
+	return false
+}
 
 func handleRegister(w http.ResponseWriter, r *http.Request) {
 	register := template.Must(template.ParseFiles("static/html/register.html"))
-	data.username = r.FormValue("username")
-	data.password = r.FormValue("password")
-	data.adress = r.FormValue("address")
-	data.phone = r.FormValue("phone")
-	data.email = r.FormValue("email")
-	data.first_name = r.FormValue("first_name")
-	data.last_name = r.FormValue("last_name")
 
-	emailValidity, err := checkEmailValidity(data.email)
-	checkError(err)
-	passValidity, err := checkPasswordValidity(data.password)
-	checkError(err)
-	if len(data.username) >= 4 && len(data.adress) != 0 && len(data.phone) >= 10 && emailValidity && emailemailValidity && len(data.first_name) >= 4 && len(data.last_name) >= 3 {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	address := r.FormValue("address")
+	phone := r.FormValue("phone")
+	email := r.FormValue("email")
+	first_name := r.FormValue("first_name")
+	last_name := r.FormValue("last_name")
+	submit := r.FormValue("submit")
+	if submit != "" {
 
-		createUserInDatabase(data.username, data.email, data.phone, data.first_name, data.last_name, data.adress, data.time, data.password, normal_user)
-		http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
+		usernameValidity, err := checkUsernameValidity(username)
+		checkErrorLogout(err)
+		addressValidity, err := checkAdressValidity(address)
+		checkErrorLogout(err)
+		emailValidity, err := checkEmailValidity(email)
+		checkErrorLogout(err)
+		passValidity, err := checkPasswordValidity(w, r, password)
+		checkErrorLogout(err)
+		fmt.Print(w, err.Error())
+
+		if usernameValidity && addressValidity && len(phone) >= 10 && emailValidity && passValidity && len(first_name) >= 4 && len(last_name) >= 3 {
+
+			err := createUserInDatabase(username, email, phone, first_name, last_name, address, password, normal_user)
+			if !checkErrorLogout(err) {
+				http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
+			} else {
+				http.Redirect(w, r, "http://"+Host+":"+Port+"/register", http.StatusMovedPermanently)
+			}
+		}
+
+	} else {
+		data = Auth{}
 	}
+	submit = ""
 	register.Execute(w, data)
 }
 
@@ -70,11 +111,24 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	log.Print("\n" + username)
 	log.Print(password)
-	envoyer := r.FormValue("submit")
-	if envoyer == "Envoyer" {
-		CheckuserLogin(username, password)
+	if r.FormValue("submit") == "Envoyer" {
+		checkUserLogin(w, r, username, password)
 	}
 	login.Execute(w, data)
+}
+
+func settingUser(w http.ResponseWriter, r *http.Request) {
+	update := template.Must(template.ParseFiles("static/html/update.html"))
+	password := r.FormValue("pasword")
+	passwordcheck := r.FormValue("checkpassword")
+	log.Print("\n" + passwordcheck)
+	log.Print(password)
+	if r.FormValue("submit") == "Envoyer" {
+		if password == passwordcheck {
+			updateUserInDatabase(password)
+		}
+	}
+	update.Execute(w, data)
 }
 
 func handle404(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +142,7 @@ func handle404(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/test_forum")
+	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/goeasydb")
 	defer db.Close()
 
 	fmt.Println("La connection a bien été établie")
@@ -98,6 +152,9 @@ func main() {
 	http.HandleFunc("/register", handleRegister)
 	http.HandleFunc("/login", handleLogin)
 	http.HandleFunc("/", handle404)
+
+	http.HandleFunc("/mangetesmort", googleLogin)
+	http.HandleFunc("/google/callback", googleCallback)
 
 	styleServer := http.FileServer(http.Dir("static/css"))
 	http.Handle("/css/", http.StripPrefix("/css/", styleServer))

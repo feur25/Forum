@@ -1,6 +1,7 @@
 body{
     background-color: #343a40;
     background-image: url("img/fondun.png");
+    overflow: hidden;
 }
 h1{
     color: bisque;

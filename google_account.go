@@ -45,8 +45,6 @@ func googleCallback(r http.ResponseWriter, w *http.Request) {
 	err = json.Unmarshal(contents, &googleData)
 	checkError(err)
 
-	
-
 	fmt.Fprintln(r, string(contents))
 }
 

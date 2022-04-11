@@ -12,10 +12,11 @@ import (
 )
 
 type Data struct {
-	Page  PageData
-	Auth  Auth
-	Error string
-	code  string
+	Page       PageData
+	Auth       Auth
+	Error      string
+	code       string
+	Authorized bool
 }
 
 type PageData struct {
@@ -52,7 +53,7 @@ var data Data = Data{}
 const (
 	isValidEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
 	normal_user  = 0
-	Port         = "4444"
+	Port         = "4443"
 	Host         = "localhost"
 )
 
@@ -114,6 +115,7 @@ func main() {
 	http.HandleFunc("/register", handleRegister)
 	http.HandleFunc("/login", handleLogin)
 	http.HandleFunc("/update", handleUpdate)
+	http.HandleFunc("/code", handleGetCode)
 	http.HandleFunc("/", handle404)
 
 	http.HandleFunc("/mangetesmort", googleLogin)

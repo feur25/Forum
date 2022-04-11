@@ -25,6 +25,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 func loginSuccess(w http.ResponseWriter, r *http.Request, auth Auth) {
 	data.Auth = auth
 	data.Auth.username = r.FormValue("username")
+	log.Print(data.Auth.email)
 	http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
 }
 

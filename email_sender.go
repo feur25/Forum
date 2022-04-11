@@ -30,14 +30,14 @@ func send_reset_mail() {
 	from := "go.easy.bot@gmail.com"
 	rand.Seed(time.Now().UTC().UnixNano())
 	generate_code := randomString(5)
-	to := []string{"feur09@gmail.com"}
-	msg := []byte("To: feur09@gmail.com\r\n" +
+	to := []string{data.Auth.email}
+	msg := []byte("To: " + data.Auth.email + "\r\n" +
 		"From: go.easy.bot@gmail.com\r\n" +
 		"Subject: Code De vérification \r\n" +
 		"\r\n" +
 		"Voici votre code de vérification " +
 		"code :\r\n" + generate_code)
-	data.code = generate_code
+	data.code = string(generate_code)
 
 	status := sendEmail(from, to, msg)
 

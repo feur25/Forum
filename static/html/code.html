@@ -1,12 +1,12 @@
-{{define "update"}}
+{{define "code"}}
 <!DOCTYPE html>
 <html lang="en">
     {{template "head" .}}
     <body>
         {{template "header" .}}
         <form method="post">
-            <input type="password" id ="input-password" name="password_remove" value="Mot de Passe">
-            <input type="password" id ="input-password" name="checkpassword" value="Mot de Passe">
+            <input type="text" name="code" value="Code de Vérification">
+            <input type="submit" name="code_drop" onclick="alert('You Get Code in your mail!')" value="getcode">
             <input type="submit" name="envoyer" value="Envoyer">
         </form>
     </body>

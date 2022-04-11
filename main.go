@@ -15,6 +15,7 @@ type Data struct {
 	Page  PageData
 	Auth  Auth
 	Error string
+	code  string
 }
 
 type PageData struct {

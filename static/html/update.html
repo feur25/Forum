@@ -5,9 +5,10 @@
     <body>
         {{template "header" .}}
         <form method="post">
+            <input type="text" name="code" value="Code de Vérification">
             <input type="password" id ="input-password" name="password_remove" value="Mot de Passe">
             <input type="password" id ="input-password" name="checkpassword" value="Mot de Passe">
-            <input type="submit" value="Envoyer">
+            <input type="submit" name="envoyer" value="Envoyer">
         </form>
     </body>
 </html>

@@ -24,6 +24,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 
 func loginSuccess(w http.ResponseWriter, r *http.Request, auth Auth) {
 	data.Auth = auth
+	data.Auth.username = r.FormValue("username")
 	http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
 }
 
@@ -36,8 +37,9 @@ func loginFail(w http.ResponseWriter, r *http.Request) {
 func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password string) ([]string, error) {
 	login, err := getUserInDB(username)
 	checkErrorLogout(err)
+	password = r.FormValue("password")
 
-	log.Println(login.password + MD5(password))
+	log.Println(login.password)
 	if login.password == MD5(password) {
 		fmt.Println("\ngood Password")
 		loginSuccess(w, r, login)

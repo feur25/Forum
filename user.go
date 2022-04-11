@@ -49,7 +49,7 @@ func getUserWithIdInDB(userId string) (Auth, error) {
 
 func updateUserInDB(w http.ResponseWriter, r *http.Request, password string) error {
 	if data.Auth.user_id != "" {
-		update, err := db.Query(fmt.Sprintf("UPDATE `users` SET `password`='%s'", password))
+		update, err := db.Query(fmt.Sprintf("UPDATE `users` SET `password`='%s' WHERE `username`='%s'", password, data.Auth.username))
 		checkError(err)
 		defer update.Close()
 	} else {

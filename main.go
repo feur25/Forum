@@ -17,6 +17,7 @@ type Data struct {
 	Error      string
 	code       string
 	Authorized bool
+	Login      bool
 }
 
 type PageData struct {
@@ -116,6 +117,7 @@ func main() {
 	http.HandleFunc("/login", handleLogin)
 	http.HandleFunc("/update", handleUpdate)
 	http.HandleFunc("/code", handleGetCode)
+	http.HandleFunc("/topic", handleGetTopic)
 	http.HandleFunc("/", handle404)
 
 	http.HandleFunc("/mangetesmort", googleLogin)

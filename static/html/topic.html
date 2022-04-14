@@ -1,0 +1,14 @@
+{{define "topic"}}
+<!DOCTYPE html>
+<html lang="en">
+    {{template "head" .}}
+    <body>
+        {{template "header" .}}
+        <form method="post">
+            <input type="text"  name="name_topic" value="Name of Topic">
+            <input type="text" name="contenue" value="Text a rentrer">
+            <input type="submit" value="Envoyer" name="submit">
+        </form>
+    </body>
+</html>
+{{end}}

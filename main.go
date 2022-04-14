@@ -18,6 +18,7 @@ type Data struct {
 	code       string
 	Authorized bool
 	Login      bool
+	Admin      int
 }
 
 type PageData struct {
@@ -54,7 +55,7 @@ var data Data = Data{}
 const (
 	isValidEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
 	normal_user  = 0
-	Port         = "4443"
+	Port         = "4444"
 	Host         = "localhost"
 )
 
@@ -118,6 +119,7 @@ func main() {
 	http.HandleFunc("/update", handleUpdate)
 	http.HandleFunc("/code", handleGetCode)
 	http.HandleFunc("/topic", handleGetTopic)
+	http.HandleFunc("/admin", handleAdminPanel)
 	http.HandleFunc("/", handle404)
 
 	http.HandleFunc("/mangetesmort", googleLogin)

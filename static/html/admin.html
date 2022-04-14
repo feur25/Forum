@@ -1,0 +1,14 @@
+{{define "admin"}}
+<!DOCTYPE html>
+<html lang="en">
+    {{template "head" .}}
+    <body>
+        {{template "header" .}}
+        <h1>Création de Nouveau tag</h1>
+        <form method="post">
+            <input type="text" name="tag" value="Nom du tag">
+            <input type="submit" name="envoyer" value="Envoyer">
+        </form>
+    </body>
+</html>
+{{end}}

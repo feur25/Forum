@@ -32,18 +32,18 @@ func createUserInDB(username string, email string, phone string, firstName strin
 }
 func getUserInDB(user string) (Auth, error) {
 	var id, username, pass, email, phone, lastN, firstN, address, date string
-	var admin bool
+	var admin int
 	err := db.QueryRow(fmt.Sprintf("SELECT * FROM users WHERE email = '%s' OR username = '%s' ", user, user)).Scan(&id, &username, &pass, &email, &admin, &phone, &firstN, &lastN, &address, &date)
 
-	auth := Auth{id, username, pass, email, phone, firstN, lastN, address}
+	auth := Auth{id, username, pass, email, phone, firstN, lastN, address, admin}
 	return auth, err
 }
 func getUserWithIdInDB(userId string) (Auth, error) {
 	var id, username, pass, email, phone, lastN, firstN, address, date string
-	var admin bool
+	var admin int
 	err := db.QueryRow(fmt.Sprintf("SELECT * FROM users WHERE user_id = '%s' ", userId)).Scan(&id, &username, &pass, &email, &admin, &phone, &firstN, &lastN, &address, &date)
 
-	auth := Auth{id, username, pass, email, phone, firstN, lastN, address}
+	auth := Auth{id, username, pass, email, phone, firstN, lastN, address, admin}
 	return auth, err
 }
 

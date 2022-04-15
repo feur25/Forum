@@ -31,7 +31,7 @@ func handleUpdate(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password_remove")
 		passwordcheck := r.FormValue("checkpassword")
 		if password != passwordcheck {
-			var bad_password = `<p style="color: red;">Les deux mots de passe ne correspondent pas <\p>`
+			var bad_password = `<p style="color: red;">Les deux mots de passe ne correspondent pas `
 			fmt.Fprintf(w, bad_password)
 		}
 		log.Print("\n" + passwordcheck)
@@ -41,16 +41,14 @@ func handleUpdate(w http.ResponseWriter, r *http.Request) {
 				log.Print("Le mot de passe a bien changer")
 				updateUserInDB(w, r, MD5(password))
 				http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
-			} else {
-				log.Print("Il y a une erreur ")
 			}
 			if password == data.Auth.password {
-				var password_active = `<p style="color: red;">Le nouveau mot de passe resemble a votre ancien, mot de passe <\p>`
+				var password_active = `<p style="color: red;">Le nouveau mot de passe resemble a votre ancien, mot de passe `
 				fmt.Fprintf(w, password_active)
 			}
 		}
 	} else {
-		var bad_code_message = `<p style="color: red;">Vous devez d'abord récuperer votre code de vérification, avant de vouloir rinitialiser votre mot de passe ! <\p>`
+		var bad_code_message = `<p style="color: red;">Vous devez d'abord récuperer votre code de vérification, avant de vouloir rinitialiser votre mot de passe !`
 		fmt.Fprintf(w, bad_code_message)
 	}
 	tmpl.ExecuteTemplate(w, "update", data)

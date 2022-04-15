@@ -8,24 +8,25 @@ import (
 
 func new_tag(name string) error {
 	insert, err := db.Query(fmt.Sprintf("INSERT INTO `tags` (`name`) VALUES ('%s')", name))
+	log.Print("Le tag : [" + name + "] a bien été implémenté")
 	checkError(err)
 	defer insert.Close()
 	return nil
 }
-func check_if_admin() {
-	insert, err := db.Query(fmt.Sprintf("SELECT * FROM users WHERE  is_admin = '%d'", data.Admin))
-	checkError(err)
-	defer insert.Close()
-}
 func handleAdminPanel(w http.ResponseWriter, r *http.Request) {
-	check_if_admin()
-	log.Print(data.Admin)
+	log.Print(data.Auth.Admin)
 	data.Page.Title = "Admin"
 	data.Page.Style = "admin"
-	if data.Admin == 1 {
-		new_tag(r.FormValue("tag"))
-	} else {
-		http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+	tag := r.FormValue("tag")
+	if data.Auth.Admin == 1 {
+		if r.FormValue("envoyer") == "Envoyer" {
+			log.Print("let's go !")
+			new_tag(tag)
+		}
+	}
+	if data.Auth.Admin == 0 {
+		go log.Print("L'utilisateur n'es pas un admin")
+		http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusFound)
 	}
 	tmpl.ExecuteTemplate(w, "admin", data)
 }

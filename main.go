@@ -14,6 +14,7 @@ import (
 type Data struct {
 	Page       PageData
 	Auth       Auth
+	Topic      Topic
 	Error      string
 	code       string
 	Authorized bool
@@ -25,6 +26,11 @@ type PageData struct {
 	Title string
 	Style string
 }
+type Topic struct {
+	topic_id string
+	contain  string
+	user_id  int
+}
 
 type Auth struct {
 	user_id    string
@@ -35,6 +41,7 @@ type Auth struct {
 	first_name string
 	last_name  string
 	address    string
+	Admin      int
 }
 
 type GoogleUser struct {
@@ -55,7 +62,7 @@ var data Data = Data{}
 const (
 	isValidEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
 	normal_user  = 0
-	Port         = "4444"
+	Port         = "4448"
 	Host         = "localhost"
 )
 
@@ -67,6 +74,7 @@ func checkErrorPanic(err error) {
 func checkErrorLogout(err error) bool {
 	if err != nil {
 		log.Println(err.Error())
+		data.Topic = Topic{}
 		data.Auth = Auth{}
 		data.Error = ""
 		return true
@@ -120,6 +128,7 @@ func main() {
 	http.HandleFunc("/code", handleGetCode)
 	http.HandleFunc("/topic", handleGetTopic)
 	http.HandleFunc("/admin", handleAdminPanel)
+	http.HandleFunc("/home", handleHome)
 	http.HandleFunc("/", handle404)
 
 	http.HandleFunc("/mangetesmort", googleLogin)

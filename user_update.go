@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-
 	"net/http"
 )
 
@@ -88,7 +87,6 @@ func handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 
 		data.DeleteConfirmationCode = ""
 	}
-
 	tmpl.ExecuteTemplate(w, "delete", data)
 }
 
@@ -101,22 +99,26 @@ func handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		tmpl.ExecuteTemplate(w, "profile2", data)
 	}
 }*/
-func SenderMessage(w http.ResponseWriter, r *http.Request) {
+func CheckSender() {
+	switch {
+	case data.friend_info.user_id == "" && !data.button:
+		privateSenderInDB(9, data.Message.sender, 0, 0)
+	case data.friend_info.user_id == "" && data.button:
+		privateSenderInDB(9, data.Message.sender, 1, 0)
+	case data.friend_info.user_id != "":
+		privateSenderInDB(9, data.Message.sender, 0, 1)
+	}
+}
+func HandleSenderMessage(w http.ResponseWriter, r *http.Request) {
 	data.Page.Title = "Call"
 	data.Page.Style = "call"
 	if data.Login {
-		checkFriendInDB(data.User.PublicInfo.Id)
-		text := r.FormValue("undefined")
-		if r.FormValue("evoyer") == "Envoyer" {
+		//checkFriendInDB(data.User.PublicInfo.Id)
+		text := r.FormValue("message")
+		if r.FormValue("envoyer") == "Envoyer" {
 			data.Message.sender = text
-			switch {
-			case data.friend_info.user_id == "" && !data.button:
-				privateSenderInDB(data.User.PublicInfo.Id, data.Message.sender, false, false)
-			case data.friend_info.user_id == "" && data.button:
-				privateSenderInDB(data.User.PublicInfo.Id, data.Message.sender, true, false)
-			case data.friend_info.user_id != "":
-				privateSenderInDB(data.User.PublicInfo.Id, data.Message.sender, false, true)
-			}
+			CheckSender()
+			privateSenderInDB(9, data.Message.sender, 0, 0)
 		}
 	}
 	tmpl.ExecuteTemplate(w, "call", data)

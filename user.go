@@ -120,14 +120,14 @@ func addFriendInDB(id string) (MessagePrivate, error) {
 	return Identifiant, nil
 }
 
-func privateSenderInDB(id string, sender string, request bool, accept bool) error {
-	if !request {
+func privateSenderInDB(id int, sender string, request int, accept int) error {
+	if request == 0 {
 		log.Printf(data.Message.sender)
 
-	} else if request {
+	} else if request == 1 {
 		data.Message.sender += "\n" + data.User.PublicInfo.Username + " Souhaite devenir votre amigo !!"
 	}
-	message, err := db.Query(fmt.Sprintf("INSERT INTO `private_sender` (`user_id`, `sender`, `request_friend`, `accept`) VALUES ('%s','%s', '%t', '%t' )", id, sender, request, accept))
+	message, err := db.Query(fmt.Sprintf("INSERT INTO `private_sender` (`user_id`, `sender`, `request_friend`, `accept`) VALUES ('%d','%s', '%d', '%d' )", id, sender, request, accept))
 	checkError(err)
 	defer message.Close()
 	return nil

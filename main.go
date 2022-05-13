@@ -11,6 +11,7 @@ import (
 
 	"html/template"
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -40,11 +41,11 @@ type TopicData struct {
 	Creator PublicUser
 }
 type Topic struct {
-	TopicId     int
+	TopicId      int
 	CreationTime string
-	Content       string
-	Name          string
-	UserId     string
+	Content      string
+	Name         string
+	UserId       string
 }
 
 var tmpl *template.Template
@@ -80,13 +81,9 @@ func checkError(err error) bool {
 	}
 	return false
 }
-func checkErrorFunc(err error, function func(...interface{})) bool {
-	if err != nil {
-		log.Println(err.Error())
-		function()
-		return true
-	}
-	return false
+func convertIntToString(text string) string {
+	strconv.ParseInt(text, 10, 64)
+	return text
 }
 
 func handle404(w http.ResponseWriter, r *http.Request) {
@@ -130,6 +127,7 @@ func main() {
 	http.HandleFunc("/admin", handleAdminPanel)
 	http.HandleFunc("/update", handleUpdateUser)
 	http.HandleFunc("/delete", handleDeleteUser)
+	http.HandleFunc("/sender", HandleSenderMessage)
 	http.HandleFunc("/home", handleHome)
 	http.HandleFunc("/", handle404)
 

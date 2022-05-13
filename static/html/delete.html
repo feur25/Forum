@@ -1,12 +1,11 @@
-{{define "code"}}
+{{define "delete"}}
 <!DOCTYPE html>
 <html lang="en">
     {{template "head" .}}
     <body>
         {{template "header" .}}
         <form method="post">
-            <input type="text" name="code" placeholder="Code de Vérification">
-            <input type="submit" name="code_drop" onclick="alert('You Get Code in your mail!')" value="getcode">
+            <input type="text" name="code" placeholder="Code de confirmation">
             <input type="submit" name="envoyer" value="Envoyer">
         </form>
     </body>

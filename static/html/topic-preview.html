@@ -1,0 +1,9 @@
+{{define "topic-preview"}}
+<a href="topic/{{.Topic.TopicId}}">
+    <div class="topic">
+        <img class="profile-picture pfp-small" src="{{.Creator.ImageLink}}" alt=""></img>
+        <p>{{.Creator.Username}}</p>
+        <p>{{.Topic.Content}}</p>
+    </div>
+</a>
+{{end}}

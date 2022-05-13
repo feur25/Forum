@@ -1,9 +1,13 @@
 package main
 
 import (
+	"crypto/md5"
 	"database/sql"
+	"encoding/hex"
 	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
 	"html/template"
 	"net/http"
@@ -12,47 +16,35 @@ import (
 )
 
 type Data struct {
-	Page       PageData
-	Auth       Auth
-	Topic      Topic
-	Error      string
-	code       string
-	Authorized bool
-	Login      bool
-	Admin      int
+	Page                   PageData
+	User                   User
+	Message                MessagePrivate
+	friend_info            Friend
+	button                 bool
+	Error                  string
+	UpdateConfirmationCode string
+	DeleteConfirmationCode string
+	Authorized             bool
+	Login                  bool
+	Admin                  int
 }
 
 type PageData struct {
-	Title string
-	Style string
+	Topics []TopicData
+	Title  string
+	Style  string
+}
+
+type TopicData struct {
+	Topic   Topic
+	Creator PublicUser
 }
 type Topic struct {
-	topic_id string
-	contain  string
-	user_id  int
-}
-
-type Auth struct {
-	user_id    string
-	username   string
-	password   string
-	email      string
-	phone      string
-	first_name string
-	last_name  string
-	address    string
-	Admin      int
-}
-
-type GoogleUser struct {
-	ID            string `json:"id"`
-	Email         string `json:"email"`
-	VerifiedEmail bool   `json:"verified_email"`
-	Name          string `json:"name"`
-	GivenName     string `json:"given_name"`
-	FamilyName    string `json:"family_name"`
-	Picture       string `json:"picture"`
-	Locale        string `json:"locale"`
+	TopicId     int
+	CreationTime string
+	Content       string
+	Name          string
+	UserId     string
 }
 
 var tmpl *template.Template
@@ -66,16 +58,16 @@ const (
 	Host         = "localhost"
 )
 
-func checkErrorPanic(err error) {
-	if err != nil {
-		panic(err.Error())
-	}
+func MD5(raw string) string {
+	encrypted := md5.Sum([]byte(raw))
+	return hex.EncodeToString(encrypted[:])
 }
+
 func checkErrorLogout(err error) bool {
 	if err != nil {
 		log.Println(err.Error())
-		data.Topic = Topic{}
-		data.Auth = Auth{}
+		data.Page.Topics = []TopicData{}
+		data.User = User{}
 		data.Error = ""
 		return true
 	}
@@ -84,6 +76,14 @@ func checkErrorLogout(err error) bool {
 func checkError(err error) bool {
 	if err != nil {
 		log.Println(err.Error())
+		return true
+	}
+	return false
+}
+func checkErrorFunc(err error, function func(...interface{})) bool {
+	if err != nil {
+		log.Println(err.Error())
+		function()
 		return true
 	}
 	return false
@@ -103,6 +103,7 @@ func handle404(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
 	db, _ = sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/goeasydb")
 	defer db.Close()
 
@@ -117,24 +118,24 @@ func main() {
 	scriptServer := http.FileServer(http.Dir("static/js"))
 	http.Handle("/js/", http.StripPrefix("/js/", scriptServer))
 
-	imageServer := http.FileServer(http.Dir("static/images"))
+	imageServer := http.FileServer(http.Dir("static/img"))
 	http.Handle("/images/", http.StripPrefix("/images/", imageServer))
 
 	tmpl = template.Must(template.ParseGlob("static/html/*.html"))
 
 	http.HandleFunc("/register", handleRegister)
 	http.HandleFunc("/login", handleLogin)
-	http.HandleFunc("/update", handleUpdate)
-	http.HandleFunc("/code", handleGetCode)
+	// http.HandleFunc("/code", handleGetCode)
 	http.HandleFunc("/topic", handleGetTopic)
 	http.HandleFunc("/admin", handleAdminPanel)
+	http.HandleFunc("/update", handleUpdateUser)
+	http.HandleFunc("/delete", handleDeleteUser)
 	http.HandleFunc("/home", handleHome)
 	http.HandleFunc("/", handle404)
 
 	http.HandleFunc("/mangetesmort", googleLogin)
 	http.HandleFunc("/google/callback", googleCallback)
 
-	print("Lancement de la page instanciée sur : " + Host + ":" + Port + "/register")
+	print("Lancement de la page effectué : " + Host + ":" + Port + "/register")
 	http.ListenAndServe(Host+":"+Port, nil)
-
 }

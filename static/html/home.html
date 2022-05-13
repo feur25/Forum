@@ -2,11 +2,15 @@
 <!DOCTYPE html>
 <html lang="en">
     {{template "head" .}}
+                       
     <body>
         {{template "header" .}}
         <p>Je check si ça marche</p>
-        {{.topic_id}}
         <p>ça marche</p>
+        {{range .Page.Topics}}
+            {{template "topic-preview" .}}
+        {{end}}
     </body>
+
 </html>
 {{end}}

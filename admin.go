@@ -14,17 +14,17 @@ func new_tag(name string) error {
 	return nil
 }
 func handleAdminPanel(w http.ResponseWriter, r *http.Request) {
-	log.Print(data.Auth.Admin)
+	log.Print(data.User.PublicInfo.Admin)
 	data.Page.Title = "Admin"
 	data.Page.Style = "admin"
 	tag := r.FormValue("tag")
-	if data.Auth.Admin == 1 {
+	if data.User.PublicInfo.Admin == 1 {
 		if r.FormValue("envoyer") == "Envoyer" {
 			log.Print("let's go !")
 			new_tag(tag)
 		}
 	}
-	if data.Auth.Admin == 0 {
+	if data.User.PublicInfo.Admin == 0 {
 		go log.Print("L'utilisateur n'es pas un admin")
 		http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusFound)
 	}

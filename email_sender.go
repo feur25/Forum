@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net/smtp"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -26,18 +25,17 @@ func randInt(min int, max int) int {
 	return min + rand.Intn(max-min)
 }
 
-func send_reset_mail() {
-	from := "go.easy.bot@gmail.com"
-	rand.Seed(time.Now().UTC().UnixNano())
+func send_update_email(recipient string) string {
 	generate_code := randomString(5)
-	to := []string{data.Auth.email}
-	msg := []byte("To: " + data.Auth.email + "\r\n" +
-		"From: go.easy.bot@gmail.com\r\n" +
+
+	from := "goeasycode@gmail.com"
+	to := []string{recipient}
+	msg := []byte("To: " + recipient + "\r\n" +
+		"From: goeasycode@gmail.com\r\n" +
 		"Subject: Code De vérification \r\n" +
 		"\r\n" +
 		"Voici votre code de vérification " +
 		"code :\r\n" + generate_code)
-	data.code = string(generate_code)
 
 	status := sendEmail(from, to, msg)
 
@@ -46,6 +44,30 @@ func send_reset_mail() {
 	} else {
 		fmt.Printf("Email sent failed.\n")
 	}
+
+	return string(generate_code)
+}
+func send_delete_email(recipient string) string {
+	from := "goeasycode@gmail.com"
+	generate_code := randomString(5)
+
+	to := []string{recipient}
+	msg := []byte("To: " + recipient + "\r\n" +
+		"From: goeasycode@gmail.com\r\n" +
+		"Subject: Suppression du compte \r\n" +
+		"\r\n" +
+		"Code pour supprimer votre compte, il ne pourra être récupéré par la suite, une suppression est définitive !  " +
+		"code :\r\n" + generate_code)
+
+	status := sendEmail(from, to, msg)
+
+	if status {
+		fmt.Printf("Email sent successfully.\n")
+	} else {
+		fmt.Printf("Email sent failed.\n")
+	}
+
+	return string(generate_code)
 }
 
 func sendEmail(from string, to []string, msg []byte) bool {

@@ -14,26 +14,13 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-	log.Print("\n" + username)
-	log.Print(password)
-	if r.FormValue("submit") == "Envoyer" {
+	log.Print("pseudo : " + username + " mdp : " + password)
+	if isButtonPressed(r, "login") {
 		checkUserLogin(w, r, username, password)
+	} else if isButtonPressed(r, "disconnect") {
+		disconnect(w, r)
 	}
 	tmpl.ExecuteTemplate(w, "login", data)
-}
-
-func loginSuccess(w http.ResponseWriter, r *http.Request, auth User) {
-	data.User = auth
-	data.User.PublicInfo.Username = r.FormValue("username")
-	data.Login = true
-	log.Print(data.User.Email)
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
-}
-
-func loginFail(w http.ResponseWriter, r *http.Request) {
-	data.User = User{}
-	data.Error = "wrong password"
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
 }
 
 func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password string) ([]string, error) {
@@ -54,4 +41,24 @@ func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password s
 	}
 
 	return nil, nil
+}
+
+func disconnect(w http.ResponseWriter, r *http.Request) {
+	data.User = User{}
+	data.Login = false
+	log.Print("wayouuu")
+	http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+}
+
+func loginSuccess(w http.ResponseWriter, r *http.Request, auth User) {
+	data.User = auth
+	data.Login = true
+	log.Print(data.User.Email)
+	http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+}
+
+func loginFail(w http.ResponseWriter, r *http.Request) {
+	data.User = User{}
+	data.Error = "wrong password"
+	http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
 }

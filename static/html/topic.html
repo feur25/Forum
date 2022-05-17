@@ -4,7 +4,11 @@
     {{template "head" .}}
     <body>
         {{template "header" .}}
+        {{range .Page.Topics}}
+            <p>{{.Topic.TopicId}}</p>
+        {{end}}
         <form method="post">
+            <p>CACA</p>
             <input type="text"  name="name_topic" placeholder="Name of Topic">
             <input type="text" name="contenue" placeholder="">
             <input type="submit" value="Envoyer" name="submit">

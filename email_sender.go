@@ -90,3 +90,22 @@ func sendEmail(from string, to []string, msg []byte) bool {
 
 	return true
 }
+func ping(senderName, recipientMail, message string) {
+
+	from := "goeasycode@gmail.com"
+	to := []string{recipientMail}
+	msg := []byte("To: " + recipientMail + "\r\n" +
+		"From: goeasycode@gmail.com\r\n" +
+		"Subject: Quelqu'un vous a envoyé un message ! (salope) \r\n" +
+		"\r\n" +
+		senderName + " vous a ping" +
+		"\nMessage : \r\n" + message)
+
+	status := sendEmail(from, to, msg)
+
+	if status {
+		fmt.Printf("Email sent successfully.\n")
+	} else {
+		fmt.Printf("Email sent failed.\n")
+	}
+}

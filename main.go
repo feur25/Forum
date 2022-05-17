@@ -29,11 +29,29 @@ type Data struct {
 	Login                  bool
 	Admin                  int
 }
+type session struct {
+	expiry time.Time
+}
 
 type PageData struct {
-	Topics []TopicData
-	Title  string
-	Style  string
+	Topics  []TopicData
+	Friends FriendList
+	Title   string
+	Style   string
+}
+
+type FriendList struct {
+	AcceptedRequests []Friend
+	SentRequests     []Friend
+	ReceivedRequests []Friend
+}
+
+type Friend struct {
+	FriendName  string
+	FriendId    string
+	SenderId    string
+	RecipientId string
+	Pending     int
 }
 
 type TopicData struct {
@@ -81,6 +99,9 @@ func checkError(err error) bool {
 	}
 	return false
 }
+func isButtonPressed(r *http.Request, buttonName string) bool {
+	return r.FormValue(buttonName) != ""
+}
 func convertIntToString(text string) string {
 	strconv.ParseInt(text, 10, 64)
 	return text
@@ -123,11 +144,11 @@ func main() {
 	http.HandleFunc("/register", handleRegister)
 	http.HandleFunc("/login", handleLogin)
 	// http.HandleFunc("/code", handleGetCode)
-	http.HandleFunc("/topic", handleGetTopic)
+	http.HandleFunc("/topic/", handleTopic)
 	http.HandleFunc("/admin", handleAdminPanel)
 	http.HandleFunc("/update", handleUpdateUser)
 	http.HandleFunc("/delete", handleDeleteUser)
-	http.HandleFunc("/sender", HandleSenderMessage)
+	http.HandleFunc("/friendreq", HandleSendFriendRequest)
 	http.HandleFunc("/home", handleHome)
 	http.HandleFunc("/", handle404)
 

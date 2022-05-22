@@ -87,7 +87,6 @@ func sendEmail(from string, to []string, msg []byte) bool {
 		log.Fatal(err)
 		return false
 	}
-
 	return true
 }
 func ping(senderName, recipientMail, message string) {

@@ -1,0 +1,43 @@
+{{define "friends-list"}}
+<div id="friends-list">
+    <div id="accepted-friends">
+        <h2>Amis</h2>
+        {{range .AcceptedFriends}}
+            <div class="friend">
+                {{template "user-preview" .FriendUser}}
+                <a href="friends/message/?id={{.RequestId}}">
+                    <div class="button">{{Translate "message"}}</div>
+                </a>
+                <a href="friends/delete/?id={{.RequestId}}">
+                    <div class="button">{{Translate "delete"}}</div>
+                </a>
+            <div> 
+        {{end}}
+    </div>
+    <div id="sent-friends">
+        <h2>Requetes d'amis envoyées</h2>
+        {{range .SentFriends}}
+            <div class="friend">
+                {{template "user-preview" .FriendUser}}
+                <a href="friends/deny/?id={{.RequestId}}">
+                    <div class="button">{{Translate "cancel"}}</div>
+                </a>
+            <div>
+        {{end}}
+    </div>
+    <div id="receive-friends">
+        <h2>Requetes d'amis recues</h2>
+        {{range .ReceivedFriends}}
+            <div class="friend">
+                {{template "user-preview" .FriendUser}}
+                <a href="friends/accept/?id={{.RequestId}}">
+                    <div class="button">{{Translate "accept"}}</div>
+                </a>
+                <a href="friends/deny/?id={{.RequestId}}">
+                    <div class="button">{{Translate "deny"}}</div>
+                </a>
+            <div>
+        {{end}}
+    </div>
+</div>
+{{end}}

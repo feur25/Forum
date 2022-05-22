@@ -1,15 +1,10 @@
 {{define "call"}}
-<!DOCTYPE html>
-<html lang="en">
     {{template "head" .}}
-    <body>
-        {{template "header" .}}
         <h1>Envoie de massege</h1>
         <form method="post">
             <input type="text" name="id" placeholder="id">
             <input type="text" name="message" placeholder="message">
             <input type="submit" name="envoyer" value="Envoyer">
         </form>
-    </body>
-</html>
+    {{template "foot" .}}
 {{end}}

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// func handleGetCode(w http.ResponseWriter, r *http.Request) {
+// func HandleGetCode(w http.ResponseWriter, r *http.Request) {
 // 	data.Page.Title = "code"
 // 	data.Page.Style = "code"
 // 	code := r.FormValue("code")
@@ -23,9 +23,9 @@ import (
 // 	tmpl.ExecuteTemplate(w, "code", data)
 // }
 
-func handleUpdateUser(w http.ResponseWriter, r *http.Request) {
+func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	if !data.Login {
-		http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+		Redirect(w, r, "/home")
 		return
 	}
 
@@ -36,7 +36,7 @@ func handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		data.UpdateConfirmationCode = send_update_email(data.User.Email)
 	}
 
-	if r.FormValue("envoyer") == "Envoyer" && r.FormValue("code") == data.UpdateConfirmationCode {
+	if IsButtonPressed(r, "envoyer") && r.FormValue("code") == data.UpdateConfirmationCode {
 		password := r.FormValue("password")
 		passwordcheck := r.FormValue("checkpassword")
 
@@ -50,9 +50,9 @@ func handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, password_active)
 		} else {
 			log.Print("Le mot de passe a bien changé")
-			updateUserInDB(w, r, MD5(password))
+			updateUser(w, r, MD5(password))
 			data.User.Password = password
-			http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+			Redirect(w, r, "/home")
 
 			data.UpdateConfirmationCode = ""
 		}
@@ -66,9 +66,9 @@ func handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	// }
 }
 
-func handleDeleteUser(w http.ResponseWriter, r *http.Request) {
+func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	if !data.Login {
-		http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+		Redirect(w, r, "/home")
 		return
 	}
 
@@ -82,8 +82,8 @@ func handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("envoyer") == "Envoyer" && r.FormValue("code") == data.DeleteConfirmationCode {
 		log.Print(data.User.Password)
 
-		http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
-		deleteUserInDB(data.User.PublicInfo.Username, data.User.Password)
+		Redirect(w, r, "/home")
+		deleteUser(data.User.PublicInfo.Username, data.User.Password)
 
 		data.DeleteConfirmationCode = ""
 	}

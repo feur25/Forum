@@ -1,5 +1,9 @@
 {{define "header"}}
 <header>
+    <div class="user-">
+        <img class="profile-picture pfp-small" src="{{.User.PublicInfo.ImageLink}}" alt=""></img>
+       <span class="">{{Translate "welcome"}}, {{.User.PublicInfo.Username}}</span>
+    </div>
     <p>Ta Goule</p>
 </header>
 {{end}}

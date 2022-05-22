@@ -16,7 +16,7 @@ import (
 func googleLogin(w http.ResponseWriter, r *http.Request) {
 	/*googleConfig := SetupConfig()
 	url := googleConfig.AuthCodeURL("randomstate")*/
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
+	Redirect(w, r, "/login")
 
 }
 
@@ -35,15 +35,15 @@ func googleCallback(r http.ResponseWriter, w *http.Request) {
 
 	}
 	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
-	checkError(err)
+	CheckError(err)
 	defer response.Body.Close()
 
 	contents, err := ioutil.ReadAll(response.Body)
-	checkError(err)
+	CheckError(err)
 
 	var googleData GoogleUser = GoogleUser{}
 	err = json.Unmarshal(contents, &googleData)
-	checkError(err)
+	CheckError(err)
 
 	fmt.Fprintln(r, string(contents))
 }

@@ -1,27 +1,26 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	//"github.com/siongui/godom"
 )
 
 // func AcceptOrReject(w http.ResponseWriter, r *http.Request) {
-// 	if isButtonPressed(r, "yes") {
+// 	if IsButtonPressed(r, "yes") {
 // 		acceptFriendRequest("1")
-// 	} else if isButtonPressed(r, "no") {
+// 	} else if IsButtonPressed(r, "no") {
 // 		denyFriendRequest("1")
 // 	}
 // }
 
-func handleHome(w http.ResponseWriter, r *http.Request) {
+func HandleHome(w http.ResponseWriter, r *http.Request) {
 	data.Page.Title = "Home"
 	data.Page.Style = "home"
 
-	data.Page.Topics = getMostRecentTopics(20)
-	data.Page.Friends = getFriendships()
+	data.Page.TopicList.Topics = getMostRecentTopics(20)
+	getFriendships(&data.Page.FriendList)
 	// AcceptOrReject(w, r)
 
-	log.Print(data.Page.Topics)
+	// log.Print(data.Page.Topics)
 	tmpl.ExecuteTemplate(w, "home", data)
 }

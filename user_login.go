@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func handleLogin(w http.ResponseWriter, r *http.Request) {
+func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	data.Page.Title = "Login"
 	data.Page.Style = "login"
@@ -15,17 +15,17 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	log.Print("pseudo : " + username + " mdp : " + password)
-	if isButtonPressed(r, "login") {
+	if IsButtonPressed(r, "login") {
 		checkUserLogin(w, r, username, password)
-	} else if isButtonPressed(r, "disconnect") {
+	} else if IsButtonPressed(r, "disconnect") {
 		disconnect(w, r)
 	}
 	tmpl.ExecuteTemplate(w, "login", data)
 }
 
 func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password string) ([]string, error) {
-	login, err := getUserInDB(username)
-	if checkError(err) {
+	login, err := getUserWithUsername(username)
+	if CheckError(err) {
 
 		loginFail(w, r)
 	} else {
@@ -33,7 +33,14 @@ func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password s
 		log.Println(login.Password)
 		if login.Password == MD5(password) {
 			fmt.Println("\ngood Password")
-			loginSuccess(w, r, login)
+			log.Println("connecter avec : " + username)
+			checkIfUserIsBanned(username)
+			log.Println(data.Warning.ban)
+			if data.Warning.ban != 1 {
+				loginSuccess(w, r, login)
+			} else {
+				log.Println("Un banni essaie de ce connecter")
+			}
 		} else {
 			fmt.Println("\nwrong Password")
 			loginFail(w, r)
@@ -47,18 +54,19 @@ func disconnect(w http.ResponseWriter, r *http.Request) {
 	data.User = User{}
 	data.Login = false
 	log.Print("wayouuu")
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+	Redirect(w, r, "/home")
 }
 
 func loginSuccess(w http.ResponseWriter, r *http.Request, auth User) {
 	data.User = auth
 	data.Login = true
+
 	log.Print(data.User.Email)
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/home", http.StatusMovedPermanently)
+	Redirect(w, r, "/home")
 }
 
 func loginFail(w http.ResponseWriter, r *http.Request) {
 	data.User = User{}
 	data.Error = "wrong password"
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
+	Redirect(w, r, "/login")
 }

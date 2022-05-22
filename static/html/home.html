@@ -1,34 +1,10 @@
 {{define "home"}}
-<!DOCTYPE html>
-<html lang="en">
     {{template "head" .}}
-                       
-    <body>
-        {{template "header" .}}
-        <p>Je check si ça marche</p>
-        <p>ça marche</p>
-        {{range .Page.Topics}}
+
+        {{range .Page.TopicList.Topics}}
             {{template "topic-preview" .}}
         {{end}}
-        <h2>Amis</h2>
-        {{range .Page.Friends.AcceptedRequests}}
-            <p>{{.FriendName}}</p>
-            <p>{{.FriendId}}</p>
-        {{end}}
-        <h2>Requetes d'amis recues</h2>
-        {{range .Page.Friends.ReceivedRequests}}
-            <p>{{.FriendName}}</p>
-            <p>{{.FriendId}}</p>
-            <input type="button" value="Accepter" name="yes" onclick="{{AcceptFriendRequest .FriendId }}">
-            <input type="button" value="Refuser" name="no" onclick="{{AcceptFriendRequest .FriendId }}">
-        {{end}}
-        <h2>Requetes d'amis envoyées</h2>
-        {{range .Page.Friends.SentRequests}}
-            <p>{{.FriendName}}</p>
-            <p>{{.FriendId}}</p>
-        {{end}}
-        <h1>GROSSE PUTE</h1>
-    </body>
+        {{template "friends-list" .Page.FriendList}}
 
-</html>
+    {{template "foot" .}}
 {{end}}

@@ -3,12 +3,20 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"net/http"
 	"strings"
 )
 
-func handleRegister(w http.ResponseWriter, r *http.Request) {
+func Logout(err error) {
+	log.Println(err.Error())
+	data.Page.FriendList = FriendList{}
+	data.User = User{}
+	data.Error = ""
+}
+
+func HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	data.Page.Title = "Register"
 	data.Page.Style = "register"
@@ -24,20 +32,28 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 	if submit != "" {
 
 		usernameValidity, err := checkUsernameValidity(username)
-		checkErrorLogout(err)
+		if err != nil {
+			Logout(err)
+		}
 		addressValidity, err := checkAdressValidity(address)
-		checkErrorLogout(err)
+		if err != nil {
+			Logout(err)
+		}
 		emailValidity, err := checkEmailValidity(email)
-		checkErrorLogout(err)
+		if err != nil {
+			Logout(err)
+		}
 		passValidity, err := checkPasswordValidity(w, r, password)
-		checkErrorLogout(err)
-
+		if err != nil {
+			Logout(err)
+		}
 		if usernameValidity && addressValidity && len(phone) >= 10 && emailValidity && passValidity && len(first_name) >= 4 && len(last_name) >= 3 {
 
-			err := createUserInDB(username, email, phone, first_name, last_name, address, password, normal_user)
-			if !checkErrorLogout(err) {
+			err := createUser(username, email, phone, first_name, last_name, address, password, 0)
+			if err != nil {
 				registerSuccess(w, r, email)
 			} else {
+				Logout(err)
 				registerFail(w, r)
 			}
 		}
@@ -49,11 +65,11 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerSuccess(w http.ResponseWriter, r *http.Request, email string) {
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
+	Redirect(w, r, "/login")
 }
 
 func registerFail(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "http://"+Host+":"+Port+"/register", http.StatusMovedPermanently)
+	Redirect(w, r, "/register")
 }
 
 func checkUsernameValidity(username string) (bool, error) {
@@ -98,5 +114,11 @@ func checkPasswordErrors(password string) error {
 		return errors.New("the password has to not contain any space")
 	default:
 		return nil
+	}
+}
+func MentionPeople(pseudo string, text string) {
+	if strings.Contains("@", text) {
+		CheckIfUserExist(pseudo)
+		ping(data.User.PublicInfo.Username, pseudo, text)
 	}
 }

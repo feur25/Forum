@@ -82,14 +82,9 @@ func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	lastname := r.FormValue("lastname")
 	if r.FormValue("google") != "" {
 		createUserGoogle(responses.Picture, pseudo, email, "", name, lastname, "", password, 0)
-		// log.Println(pseudo, email, password, name, lastname)
-		// log.Println("Vous avez terminer : ", responses.Picture)
 		http.Redirect(w, r, "/home", http.StatusTemporaryRedirect)
 	}
 	log.Println(w, "UserInfo: %s\n", data)
-	//var googleUser GoogleUser = GoogleUser{}
-	//createUser(googleUser.Name, responses.Email, "", googleUser.GivenName, googleUser.FamilyName, "", "Zeusdu96!F", 0)
-	// log.Println("let's go!!")
 	tmpl.ExecuteTemplate(w, "google", nil)
 }
 func generateStateOauthCookie(w http.ResponseWriter) string {
@@ -99,7 +94,6 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
 	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration}
-	// log.Println("Nom6 : ", GoogleUser{})
 	http.SetCookie(w, &cookie)
 
 	return state
@@ -120,7 +114,6 @@ func getUserDataFromGooglev2(code string) ([]byte, error) {
 	}
 	j := json.Unmarshal(contents, &responses)
 	log.Println("plop : ", j)
-	// log.Println("plop : ", test.Email)
 	return contents, nil
 }
 
@@ -140,6 +133,5 @@ func getUserDataFromGoogle(code string) ([]byte, error) {
 	}
 	j := json.Unmarshal(contents, &responses)
 	log.Println("plop : ", j)
-	// log.Println("plop : ", test.Email)
 	return contents, nil
 }

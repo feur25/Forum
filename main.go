@@ -150,7 +150,6 @@ func main() {
 	HttpHandle("/register", HandleRegister)
 	HttpHandle("/login", HandleLogin)
 	HttpHandle("/logout", HandleLogout)
-	// HttpHandle("/code", HandleGetCode)
 	HttpHandle("/topic/create", HandlecreateTopic)
 	HttpHandle("/topic", HandleTopic)
 	HttpHandle("/admin", HandleAdminPanel)
@@ -165,9 +164,6 @@ func main() {
 	HttpHandle("/friends/delete", HandleDeleteFriend)
 	HttpHandle("/friends/message", HandleMessageFriend)
 	HttpHandle("/", Handle404)
-
-	//HttpHandle("/google/login", googleLogin)
-	//HttpHandle("/google/callback", googleCallback)
 	HttpHandle("/auth/google/login", oauthGoogleLogin)
 	HttpHandle("/google/login", oauthGoogleLoginv2)
 	HttpHandle("/google/callback", oauthGoogleCallbackv2)

@@ -86,14 +86,12 @@ func HandleAcceptFriendRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDenyFriendRequest(w http.ResponseWriter, r *http.Request) {
-	log.Print("caca")
 	defer Redirect(w, r, "/home")
 
 	requestId, err := GetUrlParam(r, "id")
 	if CheckError(err) {
 		log.Print(err)
 	}
-	log.Print("salope de pute")
 	if checkFriendAuthorization(requestId, data.User.PublicInfo.Id) {
 		edit := fmt.Sprintf("DELETE FROM friends WHERE request_id = %s AND pending = '1'", requestId)
 		db.Query(edit)

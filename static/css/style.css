@@ -40,6 +40,9 @@ body{
     text-align: center;
     height: 100%;
 }
+.ren{
+    margin-top: 15vh;
+}
 #header-user {
     width: 25%;
 }
@@ -163,7 +166,7 @@ form{
     height: fit-content;
     background-color: aliceblue;
 }
-.bleu{
+.bookmark{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -195,7 +198,6 @@ form{
     border-radius: 15px;
 }
 .user{
-    
     display:block;
     text-align: left;
     width: 10%;
@@ -224,12 +226,80 @@ form{
     border-radius: 15px;
 }
 
-.welcome-home {
+.content-vertical {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-.friend-messages >.sent-message{
-    color: aliceblue;
+
+.friend-messages {
+    height: 70vh;
+    width: 60vw;
+    overflow: scroll;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.received-message, .sent-message {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    margin: 0 7% 15px 7%;
+}
+.received-message:after, .sent-message:after {
+    position: absolute;
+    content: "";
+    width: 0px;
+    height: 0px;
+    border-top: 20px solid #00acd7;
+    bottom: -7px;
+}
+.sent-message:after {
+    border-right: 0px solid transparent;
+    border-left: 60px solid transparent;
+    right: 10px;
+}
+.received-message:after {
+    border-right: 60px solid transparent;
+    border-left: 0px solid transparent;
+    left: 10px;
+}
+
+.received-message{
+    align-self: start;
+    text-align: left;
+}
+.sent-message{
+    align-self: end;
+    text-align: right;
+}
+
+.message-content {
+    color: #fff;
+    font-size: 1.5rem;
+    background-color: #00acd7;
+    border-radius: 35px;
+    padding: 1rem;
+}
+.message-content:after {
+}
+.footer a{
+    color: white;
+    font-weight: bold;
+}
+.footer{
+    background-color: rgba(70, 67, 67, 0.755);
+    text-align: center;
+    width: 100%;
+    clear: both;
+    position: fixed;
+    bottom: 0;
+    z-index: 10;
+    height: 1.5em;
+}
+.none{
+    display: none;
 }

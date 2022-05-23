@@ -47,13 +47,7 @@ func HandleTopic(w http.ResponseWriter, r *http.Request) {
 	} else {
 		data.Page.TopicList.SelectedTopic = getTopicWithId(Atoi(topicId))
 		data.Page.TopicList.SelectedTopic.Comments = getTopicComments(topicId, 20)
-		// log.Print(data.Page.TopicList.SelectedTopic)
 	}
-	// log.Println(Atoi(topicId))
-	// data.Page.TopicList.Topics = getMostRecentTopics(20)
-	// data.Page.TopicList.SelectedTopic.Message.TopicId = Atoi(topicId)
-	// getFriendships(&data.Page.FriendList)
-	// log.Println("la : ", data.Page.TopicList.SelectedTopic.Message.Content)
 
 	tmpl.ExecuteTemplate(w, "topic-page", data)
 }
@@ -104,7 +98,6 @@ func getMostRecentTopics(length int) []Topic {
 	for query.Next() {
 		var topic Topic
 		query.Scan(&topic.TopicId, &topic.CreationTime, &topic.Content, &topic.Name, &topic.Creator.Id, &topic.Creator.Username, &topic.Creator.ImageLink, &topic.Creator.Admin)
-		// ValidatePublicUserData(&topic.Creator)
 
 		result = append(result, topic)
 	}

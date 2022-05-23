@@ -1,23 +1,22 @@
 {{define "friend-message-page"}}
     {{template "head" .}}
-    <div class="friend-messages">
-        {{range .Page.FriendList.SelectedFriendMessages}}
-            {{if .UserIsSender }}
-                <div class="sent-message">
-                    <p>{{.Sender.Username}}, {{.CreationTime}}</p>
-                    <h3>{{.SenderContent}}</h3>
+        <div id="content">
+            <div class="content-section">
+                <div class="content-vertical">
+                    <div class="friend-messages">
+                        {{range .Page.FriendList.SelectedFriendMessages}}
+                            <div class="{{if .UserIsSender -}} sent-message {{- else -}} received-message {{- end}}">
+                                <span class="message-info">{{.Sender.Username}}, {{.CreationTime}}</span>
+                                <span class="message-content">{{if .UserIsSender -}} {{.SenderContent}} {{- else -}} {{.RecipientContent}} {{- end}}</span>
+                            </div>
+                        {{end}}
+                    </div>
+                    <form method="post">
+                        <input type="text" id="input-message" name="message" placeholder="{{Translate "message"}}">
+                        <input type="submit" value="{{Translate "sendmessage"}}" name="send-message">
+                    </form>
                 </div>
-            {{else}}
-                <div class="received-message">
-                    <p>{{.Sender.Username}}, {{.CreationTime}}</p>
-                    <h3>{{.RecipientContent}}</h3>
-                </div>
-            {{end}}
-        {{end}}
-    </div>
-    <form method="post">
-        <input type="text" id="input-message" name="message" placeholder="{{Translate "message"}}">
-        <input type="submit" value="{{Translate "sendmessage"}}" name="send-message">
-    </form>
+            </div>
+        </div>
     {{template "foot" .}}
 {{end}}

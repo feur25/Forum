@@ -13,7 +13,7 @@
         {{if .Login}}
             <a href="/friends">Friend</a>
             <span class="welcome">{{Translate "welcome"}}, {{.User.PublicInfo.Username}}</span>
-            <img class="profile-picture pfp-small" src="{{PFPCheck .User.PublicInfo.ImageLink}}" alt=""></img>
+            <a href="/login" onclick="profile()"><img class="profile-picture pfp-small" src="{{PFPCheck .User.PublicInfo.ImageLink}}" alt=""></img></a>
         {{else}}
             <a href="/login" class="button"> {{Translate "login"}} </a>
             <a href="/register" class="button"> {{Translate "register"}} </a>

@@ -34,10 +34,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil && data.Login && data.User.CookieAccept.valid != 1 && data.User.CookieAccept.id != Atoi(data.User.PublicInfo.Id) {
 		fmt.Println("cookie was not found")
 		cookie = &http.Cookie{
-			Name:  data.User.PublicInfo.Username,
-			Value: data.User.PublicInfo.Id,
-			//Domain:   "loaclhost:4448",
-			//Path:     "/cookie",
+			Name:     "localhost:4448",
+			Value:    data.User.PublicInfo.Id,
 			Expires:  time.Now().AddDate(0, 1, 0),
 			HttpOnly: true,
 		}

@@ -48,7 +48,7 @@ func HandleMessageFriend(w http.ResponseWriter, r *http.Request) {
 
 func getFriendMessages(friendId string) []FriendMessage {
 	var messages []FriendMessage
-	selection := fmt.Sprintf("SELECT messages.message_id, messages.friend_id, sender.user_id, sender.username, sender.image_link, sender.is_admin, recipient.user_id, recipient.username, recipient.image_link, recipient.is_admin, messages.sender_content, messages.recipient_content, messages.creation_time FROM messages LEFT JOIN users as sender ON sender.user_id = messages.sender_id LEFT JOIN users as recipient ON recipient.user_id = messages.recipient_id WHERE messages.friend_id = '%s'", friendId)
+	selection := fmt.Sprintf("SELECT messages.message_id, messages.friend_id, sender.user_id, sender.username, sender.image_link, sender.is_admin, recipient.user_id, recipient.username, recipient.image_link, recipient.is_admin, messages.sender_content, messages.recipient_content, messages.creation_time FROM messages LEFT JOIN users as sender ON sender.user_id = messages.sender_id LEFT JOIN users as recipient ON recipient.user_id = messages.recipient_id WHERE messages.friend_id = '%s' ORDER BY messages.creation_time DESC", friendId)
 	query, err := db.Query(selection)
 	CheckError(err)
 	defer query.Close()

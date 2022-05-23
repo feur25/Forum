@@ -151,7 +151,7 @@ form{
 .btn, .btn-large, .btn-small {
     margin-top: 5vh;
 }
-.blanc{
+.content-section{
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -168,7 +168,7 @@ form{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 20%;
+    width: fit-content;
     height: 100%;
     background-color: rgb(108, 184, 236);
 }
@@ -229,4 +229,7 @@ form{
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+.friend-messages >.sent-message{
+    color: aliceblue;
 }

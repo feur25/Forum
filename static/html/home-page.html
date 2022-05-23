@@ -1,13 +1,13 @@
 {{define "home-page"}}
     {{template "head" .}}
         <div id="content">
-            <div class="blanc">
+            <div class="content-section">
                 <div class="welcome-home">
                     <img class="logo" src="/images/goeasy_logo_blue.png" alt="">
                     <h1>Bienvenue sur GoEasy</h1>
                 </div>
             </div>
-            <div class="blanc">
+            <div class="content-section">
                 {{range .Page.TopicList.Topics}}
                     {{template "topic-preview" .}}
                 {{end}}

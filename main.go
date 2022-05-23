@@ -133,6 +133,7 @@ func main() {
 	var err error
 	tmpl, err = template.New("").Funcs(template.FuncMap{
 		"Translate": Translate,
+		"PFPCheck":  CheckImageLink,
 		// "AcceptFriendRequest": AcceptFriendRequest,
 		// "DenyFriendRequest":   DenyFriendRequest,
 	}).ParseGlob("static/html/*.html")
@@ -149,7 +150,7 @@ func main() {
 	HttpHandle("/register", HandleRegister)
 	HttpHandle("/login", HandleLogin)
 	// HttpHandle("/code", HandleGetCode)
-
+	HttpHandle("/topic/create/", HandlecreateTopic)
 	HttpHandle("/topic/", HandleTopic)
 	HttpHandle("/admin", HandleAdminPanel)
 	HttpHandle("/update", HandleUpdateUser)
@@ -163,9 +164,10 @@ func main() {
 	HttpHandle("/friends/message/", HandleMessageFriend)
 	HttpHandle("/", Handle404)
 
-	HttpHandle("/mangetesmort", googleLogin)
-	HttpHandle("/google/callback", googleCallback)
-
+	//HttpHandle("/google/login", googleLogin)
+	//HttpHandle("/google/callback", googleCallback)
+	HttpHandle("/auth/google/login", oauthGoogleLogin)
+	HttpHandle("/auth/google/callback", oauthGoogleCallback)
 	print("Lancement de la page effectué : " + Host + ":" + Port + "/register")
 	http.ListenAndServe(Host+":"+Port, nil)
 }

@@ -1,17 +1,20 @@
 package main
 
 var translation = map[string]map[string]string{
-	"accept":  {"FR": "Accepter", "EN": "Accept"},
-	"deny":    {"FR": "Refuser", "EN": "Deny"},
-	"message": {"FR": "Envoyer un Message", "EN": "Message"},
-	"delete":  {"FR": "Supprimer", "EN": "Delete"},
-	"send":    {"FR": "Envoyer", "EN": "Send"},
-	"welcome": {"FR": "Bienvenue", "EN": "Welcome"},
-	"cancel":  {"FR": "Annuler", "EN": "Cancel"},
-	"login":   {"FR": "Se Connecter", "EN": "Log in"},
-	"logout":  {"FR": "Se Déconnecter", "EN": "Log out"},
-	"username":  {"FR": "Pseudonyme", "EN": "Username"},
-	"emailaddress":  {"FR": "Adresse Email", "EN": "Username"},
+	"accept":       {"EN": "Accept", "FR": "Accepter"},
+	"deny":         {"EN": "Deny", "FR": "Refuser"},
+	"sendmessage":  {"EN": "Message", "FR": "Envoyer un Message"},
+	"delete":       {"EN": "Delete", "FR": "Supprimer"},
+	"send":         {"EN": "Send", "FR": "Envoyer"},
+	"welcome":      {"EN": "Welcome", "FR": "Bienvenue"},
+	"cancel":       {"EN": "Cancel", "FR": "Annuler"},
+	"login":        {"EN": "Log in", "FR": "Se Connecter"},
+	"logout":       {"EN": "Log out", "FR": "Se Déconnecter"},
+	"register":     {"EN": "Register", "FR": "S'inscrire"},
+	"username":     {"EN": "Username", "FR": "Pseudonyme"},
+	"emailaddress": {"EN": "Email Address", "FR": "Adresse Email"},
+	"message":      {"EN": "Message", "FR": "Message"},
+	"search":       {"EN": "Search", "FR": "Recherche"},
 }
 
 func Translate(base string) string {

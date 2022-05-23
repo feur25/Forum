@@ -1,0 +1,12 @@
+{{define "ban-page"}}
+    {{template "head" .}}
+    <form method="post">
+        <input type="text" placeholder="Name" name="pseudo">
+        <input type="text" placeholder="Day of baned" name="day">
+        <input type="text" placeholder="Month of baned" name="month">
+        <input type="text" placeholder="Years of baned" name="years">
+        <input type="submit" name="good_bye" value="Ban">
+    </form>
+
+    {{template "foot" .}}
+{{end}}

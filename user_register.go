@@ -61,7 +61,7 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	submit = ""
-	tmpl.ExecuteTemplate(w, "register", data)
+	tmpl.ExecuteTemplate(w, "register-page", data)
 }
 
 func registerSuccess(w http.ResponseWriter, r *http.Request, email string) {

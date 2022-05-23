@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type FriendList struct {
-	SelectedFriend  Friend
-	AcceptedFriends []Friend
-	SentFriends     []Friend
-	ReceivedFriends []Friend
+	SelectedFriend         Friend
+	SelectedFriendMessages []FriendMessage
+	AcceptedFriends        []Friend
+	SentFriends            []Friend
+	ReceivedFriends        []Friend
 }
 
 type Friend struct {
@@ -27,26 +27,19 @@ func HandleSendFriendRequest(w http.ResponseWriter, r *http.Request) {
 	data.Page.Title = "Call"
 	data.Page.Style = "call"
 
-	//checkFriend(data.User.PublicInfo.Id)
 	text := r.FormValue("message")
-	// caca := godom.Document.QuerySelector("name=()")
 	if IsButtonPressed(r, "envoyer") {
 		if !data.Login {
 			http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
 		} else {
-			senderId, _ := strconv.Atoi(data.User.PublicInfo.Id)
+			senderId := Atoi(data.User.PublicInfo.Id)
 			recipientUsername := r.FormValue("id")
-			err := createFriendRequest(senderId, recipientUsername, text)
+			err := sendFriendRequest(senderId, recipientUsername, text)
 			CheckError(err)
 		}
 	}
 
-	// tmpl = tmpl.Funcs(template.FuncMap{
-	// 	"AcceptFriendRequest": AcceptFriendRequest,
-	// 	"DenyFriendRequest":   DenyFriendRequest,
-	// })
-
-	tmpl.ExecuteTemplate(w, "call", data)
+	tmpl.ExecuteTemplate(w, "friend-request-page", data)
 }
 func checkFriendAuthorization(requestId, thisId string) bool {
 	var authorized bool
@@ -90,8 +83,6 @@ func HandleAcceptFriendRequest(w http.ResponseWriter, r *http.Request) {
 		edit := fmt.Sprintf("UPDATE friends SET pending = '0' WHERE friends.request_id = %s", requestId)
 		db.Query(edit)
 	}
-
-	// log.Print(requestId)
 }
 
 func HandleDenyFriendRequest(w http.ResponseWriter, r *http.Request) {
@@ -123,26 +114,7 @@ func HandleDeleteFriend(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandleMessageFriend(w http.ResponseWriter, r *http.Request) {
-	data.Page.Title = "Topic"
-	data.Page.Style = "topic"
-
-	topicId, err := GetUrlParam(r, "id")
-	if !checkFriendAuthorization(topicId, data.User.PublicInfo.Id) {
-		Redirect(w, r, "/home")
-		return
-	}
-
-	if CheckError(err) {
-		data.Page.FriendList.SelectedFriend = Friend{}
-	} else {
-		data.Page.FriendList.SelectedFriend = getFriendRequest(topicId)
-	}
-
-	tmpl.ExecuteTemplate(w, "message", data)
-}
-
-func getFriendships(list *FriendList) {
+func getAllFriendRequests(list *FriendList) {
 	selection := fmt.Sprintf("SELECT friends.*, sender.user_id, sender.username, sender.image_link, sender.is_admin, recipient.user_id, recipient.username, recipient.image_link, recipient.is_admin FROM friends LEFT JOIN users as sender ON sender.user_id = friends.sender_id LEFT JOIN users as recipient ON recipient.user_id = friends.recipient_id WHERE sender_id = '%s' OR recipient_id = '%s'", data.User.PublicInfo.Id, data.User.PublicInfo.Id)
 	query, _ := db.Query(selection)
 	defer query.Close()
@@ -155,8 +127,6 @@ func getFriendships(list *FriendList) {
 		sender := PublicUser{}
 		recipient := PublicUser{}
 		query.Scan(&friend.RequestId, &friend.SenderId, &friend.RecipientId, &friend.Pending, &sender.Id, &sender.Username, &sender.ImageLink, &sender.Admin, &recipient.Id, &recipient.Username, &recipient.ImageLink, &recipient.Admin)
-		ValidatePublicUserData(&sender)
-		ValidatePublicUserData(&recipient)
 		if data.User.PublicInfo.Id == sender.Id {
 			friend.FriendUser = recipient
 		} else {
@@ -178,14 +148,16 @@ func getFriendships(list *FriendList) {
 
 func getFriendRequest(requestId string) Friend {
 	friend := Friend{}
-	insertion := fmt.Sprintf("SELECT * FROM `friends` `sender_id` = '%s'", requestId)
-	db.QueryRow(insertion).Scan(&friend.RequestId, &friend.RecipientId, &friend.RecipientId, &friend.Pending)
+	selection := fmt.Sprintf("SELECT * FROM `friends` WHERE `request_id` = '%s' ", requestId)
+	db.QueryRow(selection).Scan(&friend.RequestId, &friend.SenderId, &friend.RecipientId, &friend.Pending)
 	if friend.SenderId == data.User.PublicInfo.Id {
-		friend.FriendUser = data.User.PublicInfo
+		user, _ := getUserWithId(friend.RecipientId)
+		friend.FriendUser = user.PublicInfo
 	} else {
 		user, _ := getUserWithId(friend.SenderId)
 		friend.FriendUser = user.PublicInfo
 	}
+	log.Print(friend)
 	return friend
 }
 
@@ -199,7 +171,7 @@ func insertFriendRequest(senderId, recipientId string) Friend {
 	return friend
 }
 
-func createFriendRequest(senderId int, recipientName string, message string) error {
+func sendFriendRequest(senderId int, recipientName string, message string) error {
 	var recipientId int
 	var recipientEmail, senderName string
 	selection := fmt.Sprintf("SELECT recipient.user_id, recipient.email, sender.username FROM users as recipient, users as sender WHERE sender.user_id = %d AND recipient.username = '%s'", senderId, recipientName)

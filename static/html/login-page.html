@@ -1,4 +1,4 @@
-{{define "login"}}
+{{define "login-page"}}
     {{template "head" .}}
         <form method="post">
             <input type="text" id="input-username" name="username" placeholder="Pseudonyme">
@@ -6,5 +6,6 @@
             <input type="submit" value="{{Translate "login"}}" name="login">
             <input type="submit" value="{{Translate "logout"}}" name="disconnect">
         </form>
+        {{template "googlev2" .}}
     {{template "foot" .}}
 {{end}}

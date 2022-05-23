@@ -58,5 +58,5 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		Redirect(w, r, "/home")
 	}
-	tmpl.ExecuteTemplate(w, "cookie", nil)
+	tmpl.ExecuteTemplate(w, "cookie-page", nil)
 }

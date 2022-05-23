@@ -20,7 +20,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	} else if IsButtonPressed(r, "disconnect") {
 		disconnect(w, r)
 	}
-	tmpl.ExecuteTemplate(w, "login", data)
+	tmpl.ExecuteTemplate(w, "login-page", data)
 }
 
 func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password string) ([]string, error) {
@@ -60,7 +60,6 @@ func disconnect(w http.ResponseWriter, r *http.Request) {
 func loginSuccess(w http.ResponseWriter, r *http.Request, auth User) {
 	data.User = auth
 	data.Login = true
-
 	log.Print(data.User.Email)
 	Redirect(w, r, "/home")
 }

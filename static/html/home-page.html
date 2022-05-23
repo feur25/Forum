@@ -1,10 +1,10 @@
-{{define "home"}}
+{{define "home-page"}}
     {{template "head" .}}
 
         {{range .Page.TopicList.Topics}}
             {{template "topic-preview" .}}
         {{end}}
         {{template "friends-list" .Page.FriendList}}
-
+ 
     {{template "foot" .}}
 {{end}}

@@ -1,8 +1,5 @@
-{{define "404"}}
-<!DOCTYPE html>
-<html lang="fr">
+{{define "404-page"}}
     {{template "head" .}}
-    <body>
         <div class="text">
             <h1>404</h1>
             <h2>La page n'existe pas</h2>
@@ -10,6 +7,5 @@
                 <input type="submit" name="click" value="Accueil">
             </form>
         </div>
-    </body>
-</html>
+    {{template "foot" .}}
 {{end}}

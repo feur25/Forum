@@ -1,4 +1,4 @@
-{{define "cookie"}}
+{{define "cookie-page"}}
     {{template "head" .}}
         <h1>Envoie de massege</h1>
         <form method="post">
@@ -6,4 +6,5 @@
             <input type="submit" name="AcceptCookie" value="Accept">
             <input type="submit" name="DenyCookie" value="Deny">
         </form>
+    {{template "foot" .}}
 {{end}}

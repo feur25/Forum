@@ -49,13 +49,26 @@ type GoogleUser struct {
 	Locale        string `json:"locale"`
 }
 
-func ValidateUserData(user *User) {
-	ValidatePublicUserData(&user.PublicInfo)
-}
-func ValidatePublicUserData(user *PublicUser) {
-	if user.ImageLink == "" {
-		user.ImageLink = "/images/defaultpfp.jpg"
+func CheckImageLink(link string) string {
+	if link == "" {
+		return "/images/defaultpfp.jpg"
 	}
+	return link
+}
+func createUserGoogle(image, username string, email string, phone string, firstName string, lastName string, address string, password string, admin int) error {
+
+	var alreadyExists bool
+	err := db.QueryRow(fmt.Sprintf("SELECT IF(COUNT(*),'true','false') FROM users WHERE email = '%s' ", email)).Scan(&alreadyExists)
+	CheckError(err)
+	if alreadyExists {
+		return errors.New("user with email already exists")
+	}
+
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `users` (`image_link`,`username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `creation_date`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s','%s', '%s', '%s', '%d')", image, username, email, phone, firstName, lastName, address, datetime, MD5(password), admin))
+	CheckError(err)
+	defer insert.Close()
+
+	return nil
 }
 
 func createUser(username string, email string, phone string, firstName string, lastName string, address string, password string, admin int) error {
@@ -79,14 +92,13 @@ func getUserWithUsername(userId string) (User, error) {
 	user := User{}
 	selection := fmt.Sprintf("SELECT * FROM users WHERE email = '%s' OR username = '%s' ", userId, userId)
 	err := db.QueryRow(selection).Scan(&user.PublicInfo.Id, &user.PublicInfo.ImageLink, &user.PublicInfo.Username, &user.Password, &user.Email, &user.PublicInfo.Admin, &user.PhoneNumber, &user.FirstName, &user.LastName, &user.Address, &user.CreationTime)
-	ValidateUserData(&user)
+	data.User.PublicInfo.Admin = user.PublicInfo.Admin
 	return user, err
 }
 func getUserWithId(userId string) (User, error) {
 	user := User{}
 	selection := fmt.Sprintf("SELECT * FROM users WHERE user_id = '%s' ", userId)
 	err := db.QueryRow(selection).Scan(&user.PublicInfo.Id, &user.PublicInfo.ImageLink, &user.PublicInfo.Username, &user.Password, &user.Email, &user.PublicInfo.Admin, &user.PhoneNumber, &user.FirstName, &user.LastName, &user.Address, &user.CreationTime)
-	ValidateUserData(&user)
 	return user, err
 }
 
@@ -108,12 +120,13 @@ func deleteUser(username string, password string) error {
 	return nil
 }
 
-func idToUsername(id string) string {
-	selection := fmt.Sprintf("SELECT username FROM users WHERE user_id = '%s'", id)
-	username := ""
-	db.QueryRow(selection).Scan(&username)
-	return username
-}
+//func idToUsername(id string) string {
+//	selection := fmt.Sprintf("SELECT username FROM users WHERE user_id = '%s'", id)
+//	username := ""
+//	db.QueryRow(selection).Scan(&username)
+//	return username
+//}
+
 func CheckIfUserExist(name string) bool {
 	selection, err := db.Query(fmt.Sprintf("SELECT username FROM users WHERE name = '%s'", name))
 	if err != nil {

@@ -20,7 +20,7 @@ import (
 // 			http.Redirect(w, r, "http://"+Host+":"+Port+"/update", http.StatusMovedPermanently)
 // 		}
 // 	}
-// 	tmpl.ExecuteTemplate(w, "code", data)
+// 	tmpl.ExecuteTemplate(w, "code-page", data)
 // }
 
 func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -58,7 +58,7 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tmpl.ExecuteTemplate(w, "update", data)
+	tmpl.ExecuteTemplate(w, "update-page", data)
 
 	// } else {
 	// 	var bad_code_message = `<p style="color: red;">Vous devez d'abord récuperer votre code de vérification, avant de vouloir réinitialiser votre mot de passe !`
@@ -87,14 +87,14 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 
 		data.DeleteConfirmationCode = ""
 	}
-	tmpl.ExecuteTemplate(w, "delete", data)
+	tmpl.ExecuteTemplate(w, "delete-page", data)
 }
 
 /*func profile(w http.ResponseWriter, r *http.Request) {
 	data.Page.Title = "Profile"
 	data.Page.Style = "profile"
 	if data.User.PublicInfo.user_id == data.Message.user_id_friends {
-		tmpl.ExecuteTemplate(w, "profile", data)
+		tmpl.ExecuteTemplate(w, "profile-page", data)
 	} else {
 		tmpl.ExecuteTemplate(w, "profile2", data)
 	}

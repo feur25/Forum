@@ -1,10 +1,11 @@
-{{define "admin"}}
+{{define "admin-page"}}
     {{template "head" .}}
         <h1>Création de Nouveau tag</h1>
         <form method="post">
             <input type="text" name="tag" placeholder="Nom du tag">
             <input type="submit" name="envoyer" value="Envoyer">
         </form>
-        {{template "ban" .}}
+        {{template "ban-page" .}}
+        {{template "topic-remove" .}}
     {{template "foot" .}}
 {{end}}

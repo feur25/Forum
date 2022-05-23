@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -29,7 +28,7 @@ func GetMesssage(id int) (MessagePrivate, error) {
 	return recipient, err
 }
 func DisplayMessage() (MessagePrivate, error) {
-	id, _ := strconv.Atoi(data.User.PublicInfo.Id)
+	id := Atoi(data.User.PublicInfo.Id)
 	sender, err := GetMesssage(id)
 	if id == data.Message.SenderId {
 

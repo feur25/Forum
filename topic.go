@@ -4,89 +4,127 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type TopicList struct {
-	SelectedTopic TopicData
-	Topics        []TopicData
+	SelectedTopic Topic
+	Topics        []Topic
 }
 
-type TopicData struct {
-	Topic        Topic
-	Creator      PublicUser
-	Message      TopicMessage
-	TopicMessage []TopicMessage
-}
 type Topic struct {
 	TopicId      int
 	CreationTime string
-	Content      string
 	Name         string
-	UserId       string
+	Content      string
+	Creator      PublicUser
+	Comments     []TopicComment
 }
-type TopicMessage struct {
-	CommentId int
-	Date      string
-	Content   string
-	UserId    int
-	TopicId   int
-	UserName  string
+type TopicComment struct {
+	CommentId    int
+	TopicId      int
+	CreationTime string
+	Content      string
+	Creator      PublicUser
 }
 
 func HandleTopic(w http.ResponseWriter, r *http.Request) {
 	data.Page.Title = "Topic"
 	data.Page.Style = "topic"
-	comment := r.FormValue("contenue")
 
 	topicId, err := GetUrlParam(r, "id")
-	if CheckError(err) {
-		data.Page.TopicList.SelectedTopic = TopicData{}
+	if IsButtonPressed(r, "submit") {
+		comment := r.FormValue("comment")
+		if data.Login {
+			commentTopic(topicId, comment)
+		} else {
+			log.Println("Il faut vous connecter !!")
+		}
+	}
 
+	if CheckError(err) {
+		data.Page.TopicList.SelectedTopic = Topic{}
+		data.Page.TopicList.SelectedTopic.Comments = []TopicComment{}
 	} else {
 		data.Page.TopicList.SelectedTopic = getTopicWithId(Atoi(topicId))
-		log.Println("ici : ", data.Page.TopicList.SelectedTopic.Message.Content)
-
+		data.Page.TopicList.SelectedTopic.Comments = getTopicComments(topicId, 20)
+		// log.Print(data.Page.TopicList.SelectedTopic)
 	}
-	if comment != "" && r.FormValue("submit") != "" {
-		responseTopic(comment, Atoi(topicId))
-	}
-	log.Println(Atoi(topicId))
-	data.Page.TopicList.Topics = getMostRecentTopics(20)
-	data.Page.TopicList.SelectedTopic.Message.TopicId = Atoi(topicId)
-	getFriendships(&data.Page.FriendList)
-	data.Page.TopicList.Topics = getMostRecentMessageTopics(20)
-	log.Println(getMostRecentMessageTopics(20))
-	log.Println("la : ", data.Page.TopicList.SelectedTopic.Message.Content)
+	// log.Println(Atoi(topicId))
+	// data.Page.TopicList.Topics = getMostRecentTopics(20)
+	// data.Page.TopicList.SelectedTopic.Message.TopicId = Atoi(topicId)
+	// getFriendships(&data.Page.FriendList)
+	// log.Println("la : ", data.Page.TopicList.SelectedTopic.Message.Content)
 
-	tmpl.ExecuteTemplate(w, "topic", data)
+	tmpl.ExecuteTemplate(w, "topic-page", data)
+}
+func HandlecreateTopic(w http.ResponseWriter, r *http.Request) {
+	name_topic := r.FormValue("name_topic")
+	text_topic := r.FormValue("text_topic")
+	if data.Login {
+		if r.FormValue("postTopic") != "" {
+			createTopic(name_topic, text_topic)
+		}
+	}
+	tmpl.ExecuteTemplate(w, "topic-create-page", nil)
 }
 
-func getTopicWithId(topicId int) TopicData {
-	selection := fmt.Sprintf("SELECT topics.*, users.user_id, users.username, users.image_link, users.is_admin FROM topics LEFT JOIN users ON topics.user_id = users.user_id WHERE topics.topic_id = %d", topicId)
-	topic := TopicData{}
-	err := db.QueryRow(selection).Scan(&topic.Topic.TopicId, &topic.Topic.CreationTime, &topic.Topic.Content, &topic.Topic.Name, &topic.Topic.UserId, &topic.Creator.Id, &topic.Creator.Username, &topic.Creator.ImageLink, &topic.Creator.Admin)
+func getTopicWithId(topicId int) Topic {
+	selection := fmt.Sprintf("SELECT topics.topic_id, topics.creation_time, topics.content, topics.name, users.user_id, users.username, users.image_link, users.is_admin FROM topics LEFT JOIN users ON topics.user_id = users.user_id WHERE topics.topic_id = %d", topicId)
+	topic := Topic{}
+	err := db.QueryRow(selection).Scan(&topic.TopicId, &topic.CreationTime, &topic.Content, &topic.Name, &topic.Creator.Id, &topic.Creator.Username, &topic.Creator.ImageLink, &topic.Creator.Admin)
 	CheckError(err)
-	ValidatePublicUserData(&topic.Creator)
+
+	selection = fmt.Sprintf("SELECT comments.comment_id, comments.topic_id, comments.creation_time, comments.content, users.user_id, users.username, users.image_link, users.is_admin FROM comments LEFT JOIN users ON comments.user_id = users.user_id WHERE comments.topic_id = %d", topicId)
+	query, err := db.Query(selection)
+	CheckError(err)
+	defer query.Close()
+	for query.Next() {
+		var comment TopicComment
+		query.Scan(&comment.CommentId, &comment.TopicId, &comment.CreationTime, &comment.Content, &comment.Creator.Id, &comment.Creator.Username, &comment.Creator.ImageLink, &comment.Creator.Admin)
+		topic.Comments = append(topic.Comments, comment)
+	}
 
 	return topic
 }
-
-func getMostRecentTopics(length int) []TopicData {
-	selection := fmt.Sprintf("SELECT topics.*, users.user_id, users.username, users.image_link, users.is_admin FROM topics LEFT JOIN users ON topics.user_id = users.user_id ORDER BY topics.creation_time ASC LIMIT %d", length)
+func removeTopicId(id int) error {
+	rmTopic, err := db.Query("DELETE FROM `topics` WHERE topic_id='%d'", id)
+	CheckError(err)
+	defer rmTopic.Close()
+	return nil
+}
+func getMostRecentTopics(length int) []Topic {
+	selection := fmt.Sprintf("SELECT topics.topic_id, topics.creation_time, topics.content, topics.name, users.user_id, users.username, users.image_link, users.is_admin FROM topics LEFT JOIN users ON topics.user_id = users.user_id ORDER BY topics.creation_time ASC LIMIT %d", length)
 	query, err := db.Query(selection)
 	if CheckError(err) {
 		return nil
 	}
 	defer query.Close()
 
-	result := []TopicData{}
+	result := []Topic{}
 	for query.Next() {
-		var topic TopicData
-		query.Scan(&topic.Topic.TopicId, &topic.Topic.CreationTime, &topic.Topic.Content, &topic.Topic.Name, &topic.Topic.UserId, &topic.Creator.Id, &topic.Creator.Username, &topic.Creator.ImageLink, &topic.Creator.Admin)
-		ValidatePublicUserData(&topic.Creator)
+		var topic Topic
+		query.Scan(&topic.TopicId, &topic.CreationTime, &topic.Content, &topic.Name, &topic.Creator.Id, &topic.Creator.Username, &topic.Creator.ImageLink, &topic.Creator.Admin)
+		// ValidatePublicUserData(&topic.Creator)
 
 		result = append(result, topic)
+	}
+	return result
+}
+
+func getTopicComments(topicId string, length int) []TopicComment {
+	messageMostRecent := fmt.Sprintf("SELECT comments.comment_id, comments.creation_time, comments.content, comments.topic_id, users.user_id, users.username, users.image_link, users.is_admin FROM comments LEFT JOIN users ON comments.user_id = users.user_id WHERE comments.topic_id= '%s' ORDER BY comments.creation_time ASC LIMIT %d", topicId, length)
+	query, err := db.Query(messageMostRecent)
+	if CheckError(err) {
+		return nil
+	}
+	defer query.Close()
+
+	result := []TopicComment{}
+	for query.Next() {
+		comment := TopicComment{}
+		query.Scan(&comment.CommentId, &comment.CreationTime, &comment.Content, &comment.TopicId, &comment.Creator.Id, &comment.Creator.Username, &comment.Creator.ImageLink, &comment.Creator.Admin)
+
+		result = append(result, comment)
 	}
 	return result
 }
@@ -97,42 +135,21 @@ func createTopic(name string, PostText string) error {
 	defer insert.Close()
 	return nil
 }
-func responseTopic(text string, id int) error {
-	userId, _ := strconv.Atoi(data.User.PublicInfo.Id)
-	comment, err := db.Query(fmt.Sprintf("INSERT INTO `comments` (`creation_date`, `content`, `user_id`, `topic_id`,`user_name`) VALUES ('%s','%s', '%d','%d','%s')", datetime, text, userId, id, data.User.PublicInfo.Username))
+func commentTopic(topicId, commentText string) {
+	insertion, err := db.Query(fmt.Sprintf("INSERT INTO `comments` (`content`, `user_id`, `topic_id`) VALUES ('%s', '%s', '%s')", commentText, data.User.PublicInfo.Id, topicId))
 	CheckError(err)
-	defer comment.Close()
-	return nil
+	defer insertion.Close()
 }
-func getTopicMessageWithId(topicId int) TopicData {
-	message := fmt.Sprintf("SELECT comments.*, users.user_id, users.username, users.image_link, users.is_admin FROM comments LEFT JOIN users ON comments.user_id = users.user_id WHERE comments.topic_id = %d", topicId)
-	getMessage := TopicData{}
-	err := db.QueryRow(message).Scan(&getMessage.Message.CommentId, &getMessage.Message.Date, &getMessage.Message.Content, &getMessage.Message.UserId, &getMessage.Message.TopicId, &getMessage.Message.UserName, &getMessage.Creator.Id, &getMessage.Creator.Username, &getMessage.Creator.ImageLink, &getMessage.Creator.Admin)
-	CheckError(err)
-	ValidatePublicUserData(&getMessage.Creator)
 
-	return getMessage
-}
-func getMostRecentMessageTopics(length int) []TopicData {
-	convert := strconv.Itoa(data.Page.TopicList.SelectedTopic.Message.TopicId)
-	messageMostRecent := fmt.Sprintf("SELECT comments.*, users.user_id, users.username, users.image_link, users.is_admin FROM comments LEFT JOIN users ON comments.user_id = users.user_id WHERE comments.topic_id= '%s' ORDER BY comments.creation_date ASC LIMIT %d", convert, length)
-	query, err := db.Query(messageMostRecent)
-	if CheckError(err) {
-		return nil
-	}
-	defer query.Close()
+// func getTopicCommentWithId(topicId int) TopicData {
+// 	message := fmt.Sprintf("SELECT comments.*, users.user_id, users.username, users.image_link, users.is_admin FROM comments LEFT JOIN users ON comments.user_id = users.user_id WHERE comments.topic_id = %d", topicId)
+// 	getMessage := TopicData{}
+// 	err := db.QueryRow(message).Scan(&getMessage.Message.CommentId, &getMessage.Message.Date, &getMessage.Message.Content, &getMessage.Message.UserId, &getMessage.Message.TopicId, &getMessage.Message.UserName, &getMessage.Creator.Id, &getMessage.Creator.Username, &getMessage.Creator.ImageLink, &getMessage.Creator.Admin)
+// 	CheckError(err)
+// 	// ValidatePublicUserData(&getMessage.Creator)
 
-	result := []TopicData{}
-	for query.Next() {
-		getMessage := TopicData{}
-		query.Scan(&getMessage.Message.CommentId, &getMessage.Message.Date, &getMessage.Message.Content, &getMessage.Message.UserId, &getMessage.Message.TopicId, &getMessage.Message.UserName, &getMessage.Creator.Id, &getMessage.Creator.Username, &getMessage.Creator.ImageLink, &getMessage.Creator.Admin)
-		ValidatePublicUserData(&getMessage.Creator)
-		log.Println(getMessage.Message.Content)
-
-		result = append(result, getMessage)
-	}
-	return result
-}
+// 	return getMessage
+// }
 
 // func HandleGetTopic(w http.ResponseWriter, r *http.Request) {
 // 	data.Page.Title = "Topic"

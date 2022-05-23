@@ -31,25 +31,15 @@ type UserInfo struct {
 	UserGoogle GoogleUser
 }
 
-func FetchUserInfo(client *http.Client) (*UserInfo, error) {
-	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	var result UserInfo
-	if err := json.Unmarshal(data, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
 var googleOauthConfig = &oauth2.Config{
 	RedirectURL:  "http://localhost:4448/auth/google/callback",
+	ClientID:     "782907329281-43c0m92f188c6enhk15e1jfvg6gcn4fh.apps.googleusercontent.com",
+	ClientSecret: "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",
+	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
+	Endpoint:     google.Endpoint,
+}
+var googleOauthConfigv2 = &oauth2.Config{
+	RedirectURL:  "http://localhost:4448/google/callback",
 	ClientID:     "782907329281-43c0m92f188c6enhk15e1jfvg6gcn4fh.apps.googleusercontent.com",
 	ClientSecret: "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",
 	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
@@ -64,14 +54,25 @@ var test UserGoogleInfo = UserGoogleInfo{}
 
 func oauthGoogleLogin(w http.ResponseWriter, r *http.Request) {
 	oauthState := generateStateOauthCookie(w)
-	log.Println("Nom : ")
 	u := googleOauthConfig.AuthCodeURL(oauthState)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
-	createUser(googleUser.Name, googleUser.Email, "", googleUser.GivenName, googleUser.FamilyName, "", "Zeusdu96!F", 0)
-	log.Println("let's go 1!!")
-	//tmpl.ExecuteTemplate(w, "googlev2", nil)
 }
-
+func oauthGoogleLoginv2(w http.ResponseWriter, r *http.Request) {
+	oauthState := generateStateOauthCookie(w)
+	u := googleOauthConfigv2.AuthCodeURL(oauthState)
+	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
+}
+func oauthGoogleCallbackv2(w http.ResponseWriter, r *http.Request) {
+	data, _ := getUserDataFromGooglev2(r.FormValue("code"))
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	if r.FormValue("googlev2") != "" {
+		checkUserLogin(w, r, email, password)
+		http.Redirect(w, r, "/home", http.StatusTemporaryRedirect)
+	}
+	log.Println(w, "UserInfo: %s\n", data)
+	tmpl.ExecuteTemplate(w, "google-login", nil)
+}
 func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	data, _ := getUserDataFromGoogle(r.FormValue("code"))
 	email := r.FormValue("email")
@@ -81,14 +82,14 @@ func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	lastname := r.FormValue("lastname")
 	if r.FormValue("google") != "" {
 		createUserGoogle(responses.Picture, pseudo, email, "", name, lastname, "", password, 0)
-		log.Println(pseudo, email, password, name, lastname)
-		log.Println("Vous avez terminer : ", responses.Picture)
+		// log.Println(pseudo, email, password, name, lastname)
+		// log.Println("Vous avez terminer : ", responses.Picture)
 		http.Redirect(w, r, "/home", http.StatusTemporaryRedirect)
 	}
 	log.Println(w, "UserInfo: %s\n", data)
 	//var googleUser GoogleUser = GoogleUser{}
 	//createUser(googleUser.Name, responses.Email, "", googleUser.GivenName, googleUser.FamilyName, "", "Zeusdu96!F", 0)
-	log.Println("let's go!!")
+	// log.Println("let's go!!")
 	tmpl.ExecuteTemplate(w, "google", nil)
 }
 func generateStateOauthCookie(w http.ResponseWriter) string {
@@ -98,10 +99,29 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)
 	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration}
-	log.Println("Nom6 : ", GoogleUser{})
+	// log.Println("Nom6 : ", GoogleUser{})
 	http.SetCookie(w, &cookie)
 
 	return state
+}
+func getUserDataFromGooglev2(code string) ([]byte, error) {
+	token, err := googleOauthConfigv2.Exchange(context.Background(), code)
+	if err != nil {
+		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
+	}
+	response, err := http.Get(oauthGoogleUrlAPI + token.AccessToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
+	}
+	defer response.Body.Close()
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed read response: %s", err.Error())
+	}
+	j := json.Unmarshal(contents, &responses)
+	log.Println("plop : ", j)
+	// log.Println("plop : ", test.Email)
+	return contents, nil
 }
 
 func getUserDataFromGoogle(code string) ([]byte, error) {
@@ -120,6 +140,6 @@ func getUserDataFromGoogle(code string) ([]byte, error) {
 	}
 	j := json.Unmarshal(contents, &responses)
 	log.Println("plop : ", j)
-	log.Println("plop : ", test.Email)
+	// log.Println("plop : ", test.Email)
 	return contents, nil
 }

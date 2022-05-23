@@ -18,9 +18,14 @@ func HandleHome(w http.ResponseWriter, r *http.Request) {
 	data.Page.Style = "home"
 
 	data.Page.TopicList.Topics = getMostRecentTopics(20)
-	getAllFriendRequests(&data.Page.FriendList)
 	// AcceptOrReject(w, r)
 
 	// log.Print(data.Page.Topics)
 	tmpl.ExecuteTemplate(w, "home-page", data)
+}
+func HandleFriend(w http.ResponseWriter, r *http.Request) {
+	data.Page.Title = "Friend"
+	data.Page.Style = "friend"
+	getAllFriendRequests(&data.Page.FriendList)
+	tmpl.ExecuteTemplate(w, "friends-page", data)
 }

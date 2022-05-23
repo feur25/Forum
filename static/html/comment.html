@@ -1,6 +1,8 @@
 {{define "comment"}}
     <div class="comment">
-        {{template "user-preview" .Creator}}
-        <p>{{.Content}}</p> 
+        <div class="user">
+            {{template "user-preview" .Creator}}
+        </div>
+            <p>{{.Content}}</p> 
     </div>
 {{end}}

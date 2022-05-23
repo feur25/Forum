@@ -1,8 +1,12 @@
 {{define "register-page"}}
     {{template "head" .}}
-        <body>
-            {{template "header" .}}
+    <div id="content">
+        <div class="blanc">
+            <div class="bleu">
+                <img class="logo" src="/images/goeasy_logo_white.png" alt="">
+            </div>
             {{template "register-form" .}}
-        </body>
+        </div>
+    </div>
     {{template "foot" .}}
 {{end}}

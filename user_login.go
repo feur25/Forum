@@ -17,10 +17,16 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	log.Print("pseudo : " + username + " mdp : " + password)
 	if IsButtonPressed(r, "login") {
 		checkUserLogin(w, r, username, password)
-	} else if IsButtonPressed(r, "disconnect") {
-		disconnect(w, r)
 	}
 	tmpl.ExecuteTemplate(w, "login-page", data)
+}
+
+func HandleLogout(w http.ResponseWriter, r *http.Request) {
+	defer Redirect(w, r, "/home")
+
+	data.User = User{}
+	data.Login = false
+
 }
 
 func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password string) ([]string, error) {
@@ -50,13 +56,6 @@ func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password s
 	return nil, nil
 }
 
-func disconnect(w http.ResponseWriter, r *http.Request) {
-	data.User = User{}
-	data.Login = false
-	log.Print("wayouuu")
-	Redirect(w, r, "/home")
-}
-
 func loginSuccess(w http.ResponseWriter, r *http.Request, auth User) {
 	data.User = auth
 	data.Login = true
@@ -66,6 +65,6 @@ func loginSuccess(w http.ResponseWriter, r *http.Request, auth User) {
 
 func loginFail(w http.ResponseWriter, r *http.Request) {
 	data.User = User{}
-	data.Error = "wrong password"
+	data.Login = false
 	Redirect(w, r, "/login")
 }

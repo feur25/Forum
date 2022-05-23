@@ -1,14 +1,19 @@
 {{define "topic-page"}}
     {{template "head" .}}
-        {{.Page.TopicList.SelectedTopic.TopicId}}
-        {{.Page.TopicList.SelectedTopic.Name}}
-        {{.Page.TopicList.SelectedTopic.Content}}
+        <div class="topic_creator">
+            <div class="topic_show">
+                {{.Page.TopicList.SelectedTopic.Name}}
+            </div>
+            <div class="topic_content">
+                {{.Page.TopicList.SelectedTopic.Content}}
+            </div>
+        </div>
         {{range .Page.TopicList.SelectedTopic.Comments}}
+        <div class="comments">
             {{template "comment" .}}
+        </div>
         {{end}}
         <form method="post">
-            <p>CACA</p>
-            <p>coucou</p>
             <input type="text" name="comment" placeholder="Rentrer votre commentaire">
             <input type="submit" value="Envoyer" name="submit">
         </form>

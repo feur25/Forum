@@ -1,0 +1,9 @@
+{{define "friends-page"}}
+    {{template "head" .}}
+    <div id="content">
+        <div class="blanc">
+            {{template "friends-list" .Page.FriendList}}
+        </div>
+    </div>
+    {{template "foot" .}}
+{{end}}

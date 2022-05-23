@@ -1,10 +1,18 @@
 {{define "home-page"}}
     {{template "head" .}}
+        <div id="content">
+            <div class="blanc">
+                <div class="welcome-home">
+                    <img class="logo" src="/images/goeasy_logo_blue.png" alt="">
+                    <h1>Bienvenue sur GoEasy</h1>
+                </div>
+            </div>
+            <div class="blanc">
+                {{range .Page.TopicList.Topics}}
+                    {{template "topic-preview" .}}
+                {{end}}
+            </div>
+        </div>
 
-        {{range .Page.TopicList.Topics}}
-            {{template "topic-preview" .}}
-        {{end}}
-        {{template "friends-list" .Page.FriendList}}
- 
     {{template "foot" .}}
 {{end}}

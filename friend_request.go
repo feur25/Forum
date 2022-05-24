@@ -24,22 +24,19 @@ type Friend struct {
 }
 
 func HandleSendFriendRequest(w http.ResponseWriter, r *http.Request) {
-	data.Page.Title = "Call"
-	data.Page.Style = "call"
+	recipientUsername, err := GetUrlParam(r, "name")
 
-	text := r.FormValue("message")
-	if IsButtonPressed(r, "envoyer") {
+	if !CheckError(err) {
 		if !data.Login {
-			http.Redirect(w, r, "http://"+Host+":"+Port+"/login", http.StatusMovedPermanently)
-		} else {
-			senderId := Atoi(data.User.PublicInfo.Id)
-			recipientUsername := r.FormValue("id")
-			err := sendFriendRequest(senderId, recipientUsername, text)
-			CheckError(err)
+			Redirect(w, r, "/login")
+			return
 		}
+		log.Print(data.User.PublicInfo.Id + " Sending friend request to : " + recipientUsername)
+		err := sendFriendRequest(data.User.PublicInfo.Id, recipientUsername, "Salope")
+		CheckError(err)
+		log.Print("Hello")
+		Redirect(w, r, "/friends")
 	}
-
-	tmpl.ExecuteTemplate(w, "friend-request-page", data)
 }
 func checkFriendAuthorization(requestId, thisId string) bool {
 	var authorized bool
@@ -72,7 +69,7 @@ func checkRecipientFriendAuthorization(requestId, thisId string) bool {
 }
 
 func HandleAcceptFriendRequest(w http.ResponseWriter, r *http.Request) {
-	defer Redirect(w, r, "/home")
+	defer Redirect(w, r, "/friends")
 
 	requestId, err := GetUrlParam(r, "id")
 	if CheckError(err) {
@@ -86,7 +83,7 @@ func HandleAcceptFriendRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDenyFriendRequest(w http.ResponseWriter, r *http.Request) {
-	defer Redirect(w, r, "/home")
+	defer Redirect(w, r, "/friends")
 
 	requestId, err := GetUrlParam(r, "id")
 	if CheckError(err) {
@@ -99,7 +96,7 @@ func HandleDenyFriendRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDeleteFriend(w http.ResponseWriter, r *http.Request) {
-	defer Redirect(w, r, "/home")
+	defer Redirect(w, r, "/friends")
 
 	requestId, err := GetUrlParam(r, "id")
 	if CheckError(err) {
@@ -169,14 +166,13 @@ func insertFriendRequest(senderId, recipientId string) Friend {
 	return friend
 }
 
-func sendFriendRequest(senderId int, recipientName string, message string) error {
-	var recipientId int
-	var recipientEmail, senderName string
-	selection := fmt.Sprintf("SELECT recipient.user_id, recipient.email, sender.username FROM users as recipient, users as sender WHERE sender.user_id = %d AND recipient.username = '%s'", senderId, recipientName)
+func sendFriendRequest(senderId, recipientName string, message string) error {
+	var recipientId, recipientEmail, senderName string
+	selection := fmt.Sprintf("SELECT recipient.user_id, recipient.email, sender.username FROM users as recipient, users as sender WHERE sender.user_id = %s AND recipient.username = '%s'", senderId, recipientName)
 	db.QueryRow(selection).Scan(&recipientId, &recipientEmail, &senderName)
 
 	foundId := 0
-	selection = fmt.Sprintf("SELECT `request_id` FROM `friends` WHERE (sender_id = '%d' AND recipient_id = '%d') OR (sender_id = '%d' AND recipient_id = '%d')", senderId, recipientId, recipientId, senderId)
+	selection = fmt.Sprintf("SELECT `request_id` FROM `friends` WHERE (sender_id = '%s' AND recipient_id = '%s') OR (sender_id = '%s' AND recipient_id = '%s')", senderId, recipientId, recipientId, senderId)
 	err := db.QueryRow(selection).Scan(&foundId)
 
 	if recipientId == senderId {

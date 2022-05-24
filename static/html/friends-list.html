@@ -1,42 +1,52 @@
 {{define "friends-list"}}
 <div id="friends-list">
     <div id="accepted-friends">
-        <h2>Amis</h2>
+        <span class="title">{{Translate "friends"}}</span>
         {{range .AcceptedFriends}}
             <div class="friend">
                 {{template "user-preview" .FriendUser}}
-                <a href="friends/message?id={{.RequestId}}">
-                    <div class="button">{{Translate "sendmessage"}}</div>
-                </a>
-                <a href="friends/delete?id={{.RequestId}}">
-                    <div class="button">{{Translate "delete"}}</div>
-                </a>
-            <div> 
+                <div class="friend-options">
+                    <a href="friends/message?id={{.RequestId}}">
+                        <div class="button">{{Translate "send-message"}}</div>
+                    </a>
+                    <a href="friends/delete?id={{.RequestId}}">
+                        <div class="button">{{Translate "delete"}}</div>
+                    </a>
+                </div>
+            </div> 
         {{end}}
     </div>
     <div id="sent-friends">
-        <h2>Requetes d'amis envoyées</h2>
+        <span class="title">{{Translate "sent-friend-requests"}}</span>
         {{range .SentFriends}}
             <div class="friend">
                 {{template "user-preview" .FriendUser}}
-                <a href="friends/deny?id={{.RequestId}}">
-                    <div class="button">{{Translate "cancel"}}</div>
-                </a>
-            <div>
+                <div class="friend-options">
+                    <a href="friends/deny?id={{.RequestId}}">
+                        <div class="button">{{Translate "cancel"}}</div>
+                    </a>
+                </div>
+            </div>
         {{end}}
+        <form action="friends/request">
+            <input type="text" name="name" placeholder="{{Translate "username"}}">
+            <input type="submit" value="{{Translate "send-friend-request"}}">
+        </form>
     </div>
-    <div id="receive-friends">
-        <h2>Requetes d'amis recues</h2>
+    <div id="received-friends">
+        <span class="title">{{Translate "received-friend-requests"}}</span>
         {{range .ReceivedFriends}}
             <div class="friend">
                 {{template "user-preview" .FriendUser}}
-                <a href="friends/accept?id={{.RequestId}}">
-                    <div class="button">{{Translate "accept"}}</div>
-                </a>
-                <a href="friends/deny?id={{.RequestId}}">
-                    <div class="button">{{Translate "deny"}}</div>
-                </a>
-            <div>
+                <div class="friend-options">
+                    <a href="friends/accept?id={{.RequestId}}">
+                        <div class="button">{{Translate "accept"}}</div>
+                    </a>
+                    <a href="friends/deny?id={{.RequestId}}">
+                        <div class="button">{{Translate "deny"}}</div>
+                    </a>
+                </div>
+            </div>
         {{end}}
     </div>
 </div>

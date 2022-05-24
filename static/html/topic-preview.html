@@ -1,8 +1,9 @@
 {{define "topic-preview"}}
     <a href="topic?id={{.TopicId}}">
         <div class="topic">
-            {{template "user-preview" .Creator}}
-            <p>{{.Content}}</p>
+            <div class="one">
+                <p>{{.Content}} by {{.Creator.Username}}</p> 
+            </div>
         </div>
     </a>
 {{end}}

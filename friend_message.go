@@ -25,19 +25,22 @@ func HandleMessageFriend(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	if IsButtonPressed(r, "send-message") {
-		log.Print("yallah")
-		log.Print(r.FormValue("message"))
-		message := insertFriendMessage(data.Page.FriendList.SelectedFriend.RequestId, data.User.PublicInfo.Id, data.Page.FriendList.SelectedFriend.FriendUser.Id, r.FormValue("message"), r.FormValue("message"))
-		log.Print(message)
-	}
+	if checkFriendAuthorization(requestId, data.User.PublicInfo.Id) && !CheckError(err) {
 
-	if CheckError(err) {
-		data.Page.FriendList.SelectedFriend = Friend{}
-		data.Page.FriendList.SelectedFriendMessages = []FriendMessage{}
-	} else {
+		if IsButtonPressed(r, "send-message") {
+			log.Print("yallah")
+			log.Print(r.FormValue("message"))
+			message := insertFriendMessage(data.Page.FriendList.SelectedFriend.RequestId, data.User.PublicInfo.Id, data.Page.FriendList.SelectedFriend.FriendUser.Id, r.FormValue("message"), r.FormValue("message"))
+			log.Print(message)
+		}
+
 		data.Page.FriendList.SelectedFriend = getFriendRequest(requestId)
 		data.Page.FriendList.SelectedFriendMessages = getFriendMessages(requestId)
+	}else{
+		data.Page.FriendList.SelectedFriend = Friend{}
+		data.Page.FriendList.SelectedFriendMessages = []FriendMessage{}
+
+		Redirect(w, r, "/home")
 	}
 
 	data.Page.Title = "Topic"

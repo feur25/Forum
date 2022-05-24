@@ -1,7 +1,6 @@
 {{define "profile-page"}}
 	{{template "head" .}}
-		<body>
-			<input type="">
-		</body>
+	{{template "user-preview" .}}
+		<a href="/logout" class="button"> {{Translate "logout"}} </a>
 	{{template "foot" .}}
 {{end}}

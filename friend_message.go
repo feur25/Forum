@@ -27,16 +27,9 @@ func HandleMessageFriend(w http.ResponseWriter, r *http.Request) {
 
 	if checkFriendAuthorization(requestId, data.User.PublicInfo.Id) && !CheckError(err) {
 
-		if IsButtonPressed(r, "send-message") {
-			log.Print("yallah")
-			log.Print(r.FormValue("message"))
-			message := insertFriendMessage(data.Page.FriendList.SelectedFriend.RequestId, data.User.PublicInfo.Id, data.Page.FriendList.SelectedFriend.FriendUser.Id, r.FormValue("message"), r.FormValue("message"))
-			log.Print(message)
-		}
-
 		data.Page.FriendList.SelectedFriend = getFriendRequest(requestId)
 		data.Page.FriendList.SelectedFriendMessages = getFriendMessages(requestId)
-	}else{
+	} else {
 		data.Page.FriendList.SelectedFriend = Friend{}
 		data.Page.FriendList.SelectedFriendMessages = []FriendMessage{}
 
@@ -47,6 +40,16 @@ func HandleMessageFriend(w http.ResponseWriter, r *http.Request) {
 	data.Page.Style = "topic"
 
 	tmpl.ExecuteTemplate(w, "friend-message-page", data)
+}
+
+func HandleSendMessage(w http.ResponseWriter, r *http.Request) {
+
+	messageText, err := GetUrlParam(r, "message")
+	if !CheckError(err) {
+		message := insertFriendMessage(data.Page.FriendList.SelectedFriend.RequestId, data.User.PublicInfo.Id, data.Page.FriendList.SelectedFriend.FriendUser.Id, messageText, messageText)
+		log.Print(message)
+	}
+	Redirect(w, r, "/friends/message?id="+data.Page.FriendList.SelectedFriend.RequestId)
 }
 
 func getFriendMessages(friendId string) []FriendMessage {

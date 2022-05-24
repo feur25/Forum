@@ -22,10 +22,10 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLogout(w http.ResponseWriter, r *http.Request) {
-	defer Redirect(w, r, "/home")
-
 	data.User = User{}
 	data.Login = false
+
+	Redirect(w, r, "/home")
 
 }
 
@@ -67,4 +67,8 @@ func loginFail(w http.ResponseWriter, r *http.Request) {
 	data.User = User{}
 	data.Login = false
 	Redirect(w, r, "/login")
+}
+func HandleProfil(w http.ResponseWriter, r *http.Request) {
+
+	tmpl.ExecuteTemplate(w, "profile-page", data)
 }

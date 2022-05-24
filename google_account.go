@@ -75,13 +75,12 @@ func oauthGoogleCallbackv2(w http.ResponseWriter, r *http.Request) {
 }
 func oauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	data, _ := getUserDataFromGoogle(r.FormValue("code"))
-	email := r.FormValue("email")
 	password := r.FormValue("password")
 	pseudo := r.FormValue("pseudo")
-	name := r.FormValue("name")
-	lastname := r.FormValue("lastname")
+	//name := r.FormValue("name")
+	//lastname := r.FormValue("lastname")
 	if r.FormValue("google") != "" {
-		createUserGoogle(responses.Picture, pseudo, email, "", name, lastname, "", password, 0)
+		createUserGoogle(responses.Picture, pseudo, responses.Email, "", "", "", "", password, 0)
 		http.Redirect(w, r, "/home", http.StatusTemporaryRedirect)
 	}
 	log.Println(w, "UserInfo: %s\n", data)

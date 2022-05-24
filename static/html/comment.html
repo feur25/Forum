@@ -3,10 +3,10 @@
         <div class="user">
             {{template "user-preview" .Creator}}
         </div>
-        <div class="card">
-            <p></p>
-            <h1>Répondu le {{.CreationTime}}</h1>
+        <div class="info-card-fold"></div>
+        <div class="content-column">
+            <span class="info-text">Répondu le {{.CreationTime}}</span> 
+            <span class="content-text">{{.Content}}</span> 
         </div>
-        <p>{{.Content}}</p> 
     </div>
 {{end}}

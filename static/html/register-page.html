@@ -2,10 +2,12 @@
     {{template "head" .}}
     <div id="content">
         <div class="content-section">
-            <div class="bookmark">
-                <img class="logo" src="/images/goeasy_logo_white.png" alt="">
+            <div class="content-horizontal">
+                <div class="bookmark">
+                    <img class="logo" src="/images/goeasy_logo_white.png" alt="">
+                </div>
+                {{template "register-form" .}}
             </div>
-            {{template "register-form" .}}
         </div>
     </div>
     {{template "foot" .}}

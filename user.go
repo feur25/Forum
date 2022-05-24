@@ -55,6 +55,12 @@ func CheckImageLink(link string) string {
 	}
 	return link
 }
+func CheckIfUserExist(pseudo string) string {
+	if pseudo == "" {
+		return "*Deleted User*"
+	}
+	return pseudo
+}
 func createUserGoogle(image, username string, email string, phone string, firstName string, lastName string, address string, password string, admin int) error {
 
 	var alreadyExists bool
@@ -64,7 +70,7 @@ func createUserGoogle(image, username string, email string, phone string, firstN
 		return errors.New("user with email already exists")
 	}
 
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `users` (`image_link`,`username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `creation_date`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s','%s', '%s', '%s', '%d')", image, username, email, phone, firstName, lastName, address, datetime, MD5(password), admin))
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `users` (`image_link`,`username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s','%s', '%s', '%d')", image, username, email, phone, firstName, lastName, address, MD5(password), admin))
 	CheckError(err)
 	defer insert.Close()
 
@@ -80,7 +86,7 @@ func createUser(username string, email string, phone string, firstName string, l
 		return errors.New("user with email already exists")
 	}
 
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `users` (`username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `creation_date`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s', '%s', '%s', '%d')", username, email, phone, firstName, lastName, address, datetime, MD5(password), admin))
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `users` (`username`, `email`, `phone_number`, `first_name`, `last_name`, `address`, `password`, `is_admin`) VALUES ('%s','%s','%s','%s','%s','%s', '%s', '%d')", username, email, phone, firstName, lastName, address, MD5(password), admin))
 	CheckError(err)
 	defer insert.Close()
 
@@ -95,6 +101,7 @@ func getUserWithUsername(userId string) (User, error) {
 	data.User.PublicInfo.Admin = user.PublicInfo.Admin
 	return user, err
 }
+
 func getUserWithId(userId string) (User, error) {
 	user := User{}
 	selection := fmt.Sprintf("SELECT * FROM users WHERE user_id = '%s' ", userId)
@@ -108,7 +115,7 @@ func updateUser(w http.ResponseWriter, r *http.Request, password string) error {
 		CheckError(err)
 		defer update.Close()
 	} else {
-		Redirect(w, r, "/login")
+		TemporaryRedirect(w, r, "/login")
 	}
 	return nil
 }
@@ -127,14 +134,14 @@ func deleteUser(username string, password string) error {
 //	return username
 //}
 
-func CheckIfUserExist(name string) bool {
-	selection, err := db.Query(fmt.Sprintf("SELECT username FROM users WHERE name = '%s'", name))
-	if err != nil {
-		log.Println("La personne n'existe pas !")
-	}
-	defer selection.Close()
-	data.User.PingName.name = name
-	return true
-}
+// func CheckIfUserExist(name string) bool {
+// 	selection, err := db.Query(fmt.Sprintf("SELECT username FROM users WHERE name = '%s'", name))
+// 	if err != nil {
+// 		log.Println("La personne n'existe pas !")
+// 	}
+// 	defer selection.Close()
+// 	data.User.PingName.name = name
+// 	return true
+// }
 
 // Admin : AdminPassword1234/

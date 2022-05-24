@@ -14,7 +14,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-	log.Print("pseudo : " + username + " mdp : " + password)
+	CheckIfUserExist(username)
 	if IsButtonPressed(r, "login") {
 		checkUserLogin(w, r, username, password)
 	}
@@ -22,11 +22,11 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleLogout(w http.ResponseWriter, r *http.Request) {
+	log.Print("User Disconnected")
 	data.User = User{}
 	data.Login = false
 
-	Redirect(w, r, "/home")
-
+	TemporaryRedirect(w, r, "/home")
 }
 
 func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password string) ([]string, error) {
@@ -41,7 +41,6 @@ func checkUserLogin(w http.ResponseWriter, r *http.Request, username, password s
 			fmt.Println("\ngood Password")
 			log.Println("connecter avec : " + username)
 			checkIfUserIsBanned(username)
-			log.Println(data.Warning.ban)
 			if data.Warning.ban != 1 {
 				loginSuccess(w, r, login)
 			} else {
@@ -60,15 +59,16 @@ func loginSuccess(w http.ResponseWriter, r *http.Request, auth User) {
 	data.User = auth
 	data.Login = true
 	log.Print(data.User.Email)
-	Redirect(w, r, "/home")
+	TemporaryRedirect(w, r, "/home")
 }
 
 func loginFail(w http.ResponseWriter, r *http.Request) {
 	data.User = User{}
 	data.Login = false
-	Redirect(w, r, "/login")
+	TemporaryRedirect(w, r, "/login")
 }
 func HandleProfil(w http.ResponseWriter, r *http.Request) {
-
+	data.Page.Title = "Profile"
+	data.Page.Style = "profile"
 	tmpl.ExecuteTemplate(w, "profile-page", data)
 }

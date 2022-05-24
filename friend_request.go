@@ -28,14 +28,14 @@ func HandleSendFriendRequest(w http.ResponseWriter, r *http.Request) {
 
 	if !CheckError(err) {
 		if !data.Login {
-			Redirect(w, r, "/login")
+			TemporaryRedirect(w, r, "/login")
 			return
 		}
 		log.Print(data.User.PublicInfo.Id + " Sending friend request to : " + recipientUsername)
 		err := sendFriendRequest(data.User.PublicInfo.Id, recipientUsername, "Salope")
 		CheckError(err)
 		log.Print("Hello")
-		Redirect(w, r, "/friends")
+		TemporaryRedirect(w, r, "/friends")
 	}
 }
 func checkFriendAuthorization(requestId, thisId string) bool {
@@ -69,7 +69,7 @@ func checkRecipientFriendAuthorization(requestId, thisId string) bool {
 }
 
 func HandleAcceptFriendRequest(w http.ResponseWriter, r *http.Request) {
-	defer Redirect(w, r, "/friends")
+	defer TemporaryRedirect(w, r, "/friends")
 
 	requestId, err := GetUrlParam(r, "id")
 	if CheckError(err) {
@@ -83,7 +83,7 @@ func HandleAcceptFriendRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDenyFriendRequest(w http.ResponseWriter, r *http.Request) {
-	defer Redirect(w, r, "/friends")
+	defer TemporaryRedirect(w, r, "/friends")
 
 	requestId, err := GetUrlParam(r, "id")
 	if CheckError(err) {
@@ -96,7 +96,7 @@ func HandleDenyFriendRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDeleteFriend(w http.ResponseWriter, r *http.Request) {
-	defer Redirect(w, r, "/friends")
+	defer TemporaryRedirect(w, r, "/friends")
 
 	requestId, err := GetUrlParam(r, "id")
 	if CheckError(err) {

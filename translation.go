@@ -12,6 +12,7 @@ var translation = map[string]map[string]string{
 	"logout":                   {"EN": "Log out", "FR": "Se Déconnecter"},
 	"register":                 {"EN": "Register", "FR": "S'inscrire"},
 	"username":                 {"EN": "Username", "FR": "Pseudonyme"},
+	"update":                   {"EN": "update", "FR": "Mise a Jour"},
 	"password":                 {"EN": "Password", "FR": "Mot de Passe"},
 	"address":                  {"EN": "Address", "FR": "Adresse"},
 	"email-address":            {"EN": "Email Address", "FR": "Adresse Email"},
@@ -24,10 +25,12 @@ var translation = map[string]map[string]string{
 	"friends":                  {"EN": "Friends", "FR": "Amis"},
 	"sent-friend-requests":     {"EN": "Sent Friend Requests", "FR": "Demandes d'Amis Envoyées"},
 	"received-friend-requests": {"EN": "Search", "FR": "Demandes d'Amis Reçues"},
+	"date":                     {"EN": "Creation date", "FR": "Date de création du compte"},
+	"topic":                    {"EN": "Post New Topic", "FR": "Publier un Nouveau Topic"},
 }
 
 func Translate(base string) string {
-	val := translation[base]["FR"]
+	val := translation[base][data.Language]
 	if val != "" {
 		return val
 	}

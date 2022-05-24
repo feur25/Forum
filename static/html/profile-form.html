@@ -1,3 +1,19 @@
 {{define "profile"}}
-    {{template "user-preview" .Creator}}
+
+    <div id="content">
+        <div class="content-section">
+            <div class="axel">
+                <img class="profile-picture pfp-small" src="{{PFPCheck .User.PublicInfo.ImageLink}}" alt=""></img>
+                <p>Id : {{.User.PublicInfo.Id}}</p>
+                <p>{{Translate "username"}} : {{.User.PublicInfo.Username}}</p>
+                <p>{{Translate "date"}} : {{.User.CreationTime}}</p>
+                <p>{{.User.FirstName}} {{.User.LastName}}</p>
+                <p>{{Translate "phone-number"}} : {{.User.PhoneNumber}}</p>
+                <div class="axel2">
+                    <a href="/update" class="button"> {{Translate "update"}} </a>
+                    {{template "disconnect-button" .}}
+                </div>
+            </div>
+        </div>
+    </div>
 {{end}}

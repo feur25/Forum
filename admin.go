@@ -72,7 +72,7 @@ func HandleAdminPanel(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		go log.Print("L'utilisateur n'es pas un admin")
-		Redirect(w, r, "/home")
+		TemporaryRedirect(w, r, "/home")
 	}
 	if r.FormValue("good_bye") != "" {
 		ban(pseudo, 1, day, month, year)

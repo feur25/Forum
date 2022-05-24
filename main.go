@@ -22,6 +22,7 @@ type Data struct {
 	User                   User
 	Message                MessagePrivate
 	Warning                Banned
+	Language               string
 	Error                  string
 	UpdateConfirmationCode string
 	DeleteConfirmationCode string
@@ -48,11 +49,9 @@ var data Data = Data{}
 
 const (
 	isValidEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
-	Port         = "4448"
+	Port         = "4446"
 	Host         = "localhost"
 )
-
-var datetime = time.Now().UTC().Format("2006-01-02 03:04:05")
 
 func IsButtonPressed(r *http.Request, buttonName string) bool {
 	return r.FormValue(buttonName) != ""
@@ -60,6 +59,10 @@ func IsButtonPressed(r *http.Request, buttonName string) bool {
 
 func Redirect(w http.ResponseWriter, r *http.Request, link string) {
 	http.Redirect(w, r, "http://"+Host+":"+Port+link, http.StatusMovedPermanently)
+}
+
+func TemporaryRedirect(w http.ResponseWriter, r *http.Request, link string) {
+	http.Redirect(w, r, "http://"+Host+":"+Port+link, http.StatusTemporaryRedirect)
 }
 
 func GetUrlParam(r *http.Request, param string) (string, error) {
@@ -106,6 +109,12 @@ func Handle404(w http.ResponseWriter, r *http.Request) {
 func HttpHandle(url string, function func(w http.ResponseWriter, r *http.Request)) {
 	http.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		data.Error = ""
+		newLanguage := r.FormValue("language")
+		if newLanguage != "" {
+			data.Language = newLanguage
+		} else if data.Language == "" {
+			data.Language = "EN"
+		}
 
 		function(w, r)
 	})
@@ -134,6 +143,7 @@ func main() {
 	tmpl, err = template.New("").Funcs(template.FuncMap{
 		"Translate": Translate,
 		"PFPCheck":  CheckImageLink,
+		"UserCheck": CheckIfUserExist,
 		// "AcceptFriendRequest": AcceptFriendRequest,
 		// "DenyFriendRequest":   DenyFriendRequest,
 	}).ParseGlob("static/html/*.html")

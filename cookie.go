@@ -48,13 +48,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		if data.User.CookieAccept.id != Atoi(data.User.PublicInfo.Id) {
 			InsertCookieUser(1)
 		}
-		Redirect(w, r, "/home")
+		TemporaryRedirect(w, r, "/home")
 	}
 	if r.FormValue("DenyCookie") != "" {
 		if data.User.CookieAccept.id != Atoi(data.User.PublicInfo.Id) {
 			InsertCookieUser(0)
 		}
-		Redirect(w, r, "/home")
+		TemporaryRedirect(w, r, "/home")
 	}
 	tmpl.ExecuteTemplate(w, "cookie-page", nil)
 }

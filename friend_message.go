@@ -33,7 +33,7 @@ func HandleMessageFriend(w http.ResponseWriter, r *http.Request) {
 		data.Page.FriendList.SelectedFriend = Friend{}
 		data.Page.FriendList.SelectedFriendMessages = []FriendMessage{}
 
-		Redirect(w, r, "/home")
+		TemporaryRedirect(w, r, "/home")
 	}
 
 	data.Page.Title = "Topic"
@@ -49,7 +49,7 @@ func HandleSendMessage(w http.ResponseWriter, r *http.Request) {
 		message := insertFriendMessage(data.Page.FriendList.SelectedFriend.RequestId, data.User.PublicInfo.Id, data.Page.FriendList.SelectedFriend.FriendUser.Id, messageText, messageText)
 		log.Print(message)
 	}
-	Redirect(w, r, "/friends/message?id="+data.Page.FriendList.SelectedFriend.RequestId)
+	TemporaryRedirect(w, r, "/friends/message?id="+data.Page.FriendList.SelectedFriend.RequestId)
 }
 
 func getFriendMessages(friendId string) []FriendMessage {

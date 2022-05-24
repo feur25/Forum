@@ -65,11 +65,11 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerSuccess(w http.ResponseWriter, r *http.Request, email string) {
-	Redirect(w, r, "/login")
+	TemporaryRedirect(w, r, "/login")
 }
 
 func registerFail(w http.ResponseWriter, r *http.Request) {
-	Redirect(w, r, "/register")
+	TemporaryRedirect(w, r, "/register")
 }
 
 func checkUsernameValidity(username string) (bool, error) {
@@ -114,11 +114,5 @@ func checkPasswordErrors(password string) error {
 		return errors.New("the password has to not contain any space")
 	default:
 		return nil
-	}
-}
-func MentionPeople(pseudo string, text string) {
-	if strings.Contains("@", text) {
-		CheckIfUserExist(pseudo)
-		ping(data.User.PublicInfo.Username, pseudo, text)
 	}
 }

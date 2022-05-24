@@ -1,9 +1,15 @@
 {{define "header"}}
 <div id="header">
     <a class="header-section" href="/home">
-        <img class="medium-logo" src="/images/goeasy_logo_white.png" alt="">
+        <img class="medium-logo" src="/images/goeasy_logo_blue.png" alt="">
     </a>
     <div class="header-section">
+        <form name="language-setting" method="post">
+            <select onchange="this.form.submit()" id="language-select" name="language">
+              <option value="EN" {{if eq .Language "EN" -}} selected disabled hidden {{- end}}>English</option>
+              <option value="FR" {{if eq .Language "FR" -}} selected disabled hidden {{- end}}>Français</option>
+            </select>
+        </form>
     </div>
     <form id="header-search-bar" class="header-section" method="post">
         <input type="text" name="search-input" placeholder="Recherche dans le Site">
@@ -13,7 +19,7 @@
         {{if .Login}}
             <a href="/friends">Friend</a>
             <span class="welcome">{{Translate "welcome"}}, {{.User.PublicInfo.Username}}</span>
-            <a href="/login"><img class="profile-picture pfp-small" src="{{PFPCheck .User.PublicInfo.ImageLink}}" alt=""></img></a>
+            <a href="/profile"><img class="profile-picture pfp-small" src="{{PFPCheck .User.PublicInfo.ImageLink}}" alt=""></img></a>
         {{else}}
             <a href="/login" class="button"> {{Translate "login"}} </a>
             <a href="/register" class="button"> {{Translate "register"}} </a>

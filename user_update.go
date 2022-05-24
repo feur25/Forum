@@ -25,7 +25,7 @@ import (
 
 func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	if !data.Login {
-		Redirect(w, r, "/home")
+		TemporaryRedirect(w, r, "/home")
 		return
 	}
 
@@ -52,7 +52,7 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 			log.Print("Le mot de passe a bien changé")
 			updateUser(w, r, MD5(password))
 			data.User.Password = password
-			Redirect(w, r, "/home")
+			TemporaryRedirect(w, r, "/home")
 
 			data.UpdateConfirmationCode = ""
 		}
@@ -68,7 +68,7 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	if !data.Login {
-		Redirect(w, r, "/home")
+		TemporaryRedirect(w, r, "/home")
 		return
 	}
 
@@ -82,7 +82,7 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("envoyer") == "Envoyer" && r.FormValue("code") == data.DeleteConfirmationCode {
 		log.Print(data.User.Password)
 
-		Redirect(w, r, "/home")
+		TemporaryRedirect(w, r, "/home")
 		deleteUser(data.User.PublicInfo.Username, data.User.Password)
 
 		data.DeleteConfirmationCode = ""

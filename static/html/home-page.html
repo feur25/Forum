@@ -1,16 +1,13 @@
 {{define "home-page"}}
     {{template "head" .}}
         <div id="content">
-            <div class="content-section">
-                <div class="content-vertical">
-                    <img class="logo" src="/images/goeasy_logo_color.png" alt="">
-                    <h1>Bienvenue sur GoEasy</h1>
-                </div>
-            </div>
-            <div class="content-section">
+            <div class="content-topic">
                 <h1>Topic Recent</h1>
                 {{range .Page.TopicList.Topics}}
                     {{template "topic-preview" .}}
+                {{end}}
+                {{if .Login}}
+                    <a href="topic/create">{{Translate "topic"}}</a>
                 {{end}}
             </div>
         </div>

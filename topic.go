@@ -52,13 +52,17 @@ func HandleTopic(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "topic-page", data)
 }
 func HandlecreateTopic(w http.ResponseWriter, r *http.Request) {
-	name_topic := r.FormValue("name_topic")
-	text_topic := r.FormValue("text_topic")
+	name_topic := r.FormValue("nametopic")
+	text_topic := r.FormValue("texttopic")
+	log.Println("exemple")
 	if data.Login {
-		if r.FormValue("postTopic") != "" {
+		log.Println("exemple")
+		if r.FormValue("post") == "Submit" {
+			log.Println("exemple")
 			createTopic(name_topic, text_topic)
 		}
 	}
+	log.Println("exemple")
 	tmpl.ExecuteTemplate(w, "topic-create-page", nil)
 }
 
@@ -123,7 +127,7 @@ func getTopicComments(topicId string, length int) []TopicComment {
 }
 
 func createTopic(name string, PostText string) error {
-	insert, err := db.Query(fmt.Sprintf("INSERT INTO `topic` (`name`, `user_id`, `contain`) VALUES ('%s','%s', '%s')", name, data.User.PublicInfo.Id, PostText))
+	insert, err := db.Query(fmt.Sprintf("INSERT INTO `topics` (`content`, `name`, `user_id`) VALUES ('%s','%s', '%s')", name, PostText, data.User.PublicInfo.Id))
 	CheckError(err)
 	defer insert.Close()
 	return nil

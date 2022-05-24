@@ -3,7 +3,7 @@
         <input type="text" id="input-username" name="username" placeholder="{{Translate "username"}}">
         <input type="password" id ="input-password" name="password" placeholder="{{Translate "password"}}">
         <input type="submit" value="{{Translate "login"}}" name="login">
-        <a href="/logout" class="button"> {{Translate "logout"}} </a>
+        {{template "disconnect-button" .}}
         {{template "googlev2" .}}
     </form>
 {{end}}

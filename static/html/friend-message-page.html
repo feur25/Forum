@@ -6,8 +6,8 @@
                     <div class="friend-messages">
                         {{range .Page.FriendList.SelectedFriendMessages}}
                             <div class="{{if .UserIsSender -}} sent-message {{- else -}} received-message {{- end}}">
-                                <span class="message-info">{{.Sender.Username}}, {{.CreationTime}}</span>
-                                <span class="message-content">{{if .UserIsSender -}} {{.SenderContent}} {{- else -}} {{.RecipientContent}} {{- end}}</span>
+                                <span class="info-text">{{.Sender.Username}}, {{.CreationTime}}</span>
+                                <span class="message-text">{{if .UserIsSender -}} {{.SenderContent}} {{- else -}} {{.RecipientContent}} {{- end}}</span>
                             </div>
                         {{end}}
                     </div>

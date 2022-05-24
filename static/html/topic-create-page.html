@@ -1,7 +1,14 @@
 {{define "topic-create-page"}}
     {{template "head" .}}
-    <input type="text" name="name_topic" placeholder="Title Topic">
-    <input type="text" name="text_topic" placeholder="Text in your Topic">
-    <input type="submit" name="postTopic" value="Submit">
+    <div id="content">
+        <div class="content-section">
+            <div class="bookmark">
+                <img class="logo" src="/images/goeasy_logo_white.png" alt="">
+            </div>
+                <input type="text" name="nametopic" placeholder="Title Topic">
+                <input type="text" name="texttopic" placeholder="Text in your Topic">
+                <input type="submit" name="post" value="Submit">
+        </div>
+    </div>
     {{template "foot" .}}
 {{end}}

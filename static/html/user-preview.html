@@ -1,6 +1,6 @@
 {{define "user-preview"}}
     <a class="user-preview" href="profile?id={{.Id}}">
         <img class="profile-picture pfp-small" src="{{PFPCheck .ImageLink}}" alt=""></img>
-        <span class="username">{{.Username}}</span>
+        <span class="username">{{UserCheck .Username}}</span>
     </a>
 {{end}}

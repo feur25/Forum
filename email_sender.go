@@ -95,7 +95,7 @@ func ping(senderName, recipientMail, message string) {
 	to := []string{recipientMail}
 	msg := []byte("To: " + recipientMail + "\r\n" +
 		"From: goeasycode@gmail.com\r\n" +
-		"Subject: Quelqu'un vous a envoyé un message ! (salope) \r\n" +
+		"Subject: Quelqu'un vous a envoyé un message ! \r\n" +
 		"\r\n" +
 		senderName + " vous a ping" +
 		"\nMessage : \r\n" + message)

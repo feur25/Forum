@@ -3,6 +3,9 @@ body{
     margin: 0;
 }
 #header {
+    top: 0;
+    z-index: 100;
+    position: fixed;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -30,6 +33,10 @@ body{
     width: 4rem;
     height: 4rem;
 } */
+select{
+    width: 7rem!important;
+    display: block!important;
+}
 
 .header-section {
     box-sizing: border-box;
@@ -56,7 +63,7 @@ body{
     flex-direction: column;
     justify-content: center;
     text-align: center;
-    margin-top: 3%;
+    margin-top: 6%;
 }
 
 .medium-logo {
@@ -140,8 +147,8 @@ form{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    width: 28vw;
-    height: 10vh;
+    /* width: 28vw; */
+    /* height: 10vh; */
     margin: auto;
     border-radius: 2%;
     text-align: center;
@@ -161,9 +168,26 @@ form{
 .btn, .btn-large, .btn-small {
     margin-top: 5vh;
 }
-.content-section{
+.axel{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10vh;
+    background-color: aliceblue;
+    width: 18vw;
+    height: 35vh;
+    text-align: center;
+}
+.axel p{
+    font-weight: bold;
+}
+.axel2{
     display: flex;
     flex-direction: row;
+    justify-content: center;
+}
+.content-section{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     overflow: hidden;
@@ -172,6 +196,25 @@ form{
     width: 80%;
     height: fit-content;
     background-color: aliceblue;
+}
+.content-topic{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 40px;
+    margin: auto auto 2% auto;
+    width: 49%;
+    height: fit-content;
+    background-color: aliceblue;
+}
+.content-horizontal {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 .bookmark{
     display: flex;
@@ -197,25 +240,50 @@ form{
     text-align: center;
 }
 
-.topic_show{
+.topic-preview {
+    background-color: #00acd7;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 36rem;
+    height: fit-content;
+    border-bottom: 2px dotted white;
+}
+.topic-name{
     margin: auto;
     width: 25vh;
     color: white;
     font-weight:bold;
 }
+.topic-content{
+    color: aliceblue;
+    font-weight:bold;
+}
+
 .comment{
+    position: relative;
     margin: 2.5vh auto;
     overflow: hidden;
     background-color: rgb(216, 230, 234);
-    width: 50%;
+    width: 70%;
     height: 100%;
     border-radius: 15px;
+}
+.content-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    width: 100%;
+    height: fit-content;
+    margin: 0 10px 12px 10px;
 }
 .user{
     display:block;
     text-align: left;
     width: 100%;
-    height: 70px;
+    height: 10vh;
     background-color: #00acd7;
 }
 .user-preview {
@@ -231,11 +299,18 @@ form{
     font-weight:bold;
     margin-left: 0.5rem;
 }
-.card p{
+.info-card {
+    position: relative;
+    background-color: rgb(216, 230, 234);
+    font-size: 1vw;
+    margin-top: auto;
+}
+.info-card-fold {
+    position: absolute;
     min-width: 200px;
     border-left: 25px solid transparent;
     border-bottom: 25px solid rgb(216, 230, 234);
-    top: -4.5vh;
+    top: 8vh;
     left: 20vw;
     position: absolute;
     width: 70%;
@@ -243,17 +318,7 @@ form{
     box-shadow: 0 0 0 0;
     float: right;
 }
-.card h1{
-    background-color: rgb(216, 230, 234);
-    font-size: 1vw;
-    margin-top: auto;
-}
-.topic_content{
-    color: aliceblue;
-    font-weight:bold;
-}
-.topic_creator{
-    background-color: rgb(11, 16, 18);
+.topic{
     width: 50%;
     height: 100%;
     text-align: center;
@@ -287,13 +352,13 @@ form{
     align-items: center;
 }
 
-#friends-list {
-    width: 90%;
+#contacts-list {
+    width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: baseline;
-    height: 70vh;
+    min-height: 70vh;
 }
 .friend-messages {
     height: 70vh;
@@ -307,9 +372,8 @@ form{
 #accepted-friends, #sent-friends, #received-friends {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
     width: 100%;
+    align-items: center;
 }
 
 .received-message, .sent-message {
@@ -347,15 +411,55 @@ form{
     text-align: right;
 }
 
-.message-content {
+.content-text {
+    color: #fff;
+    font-size: 1.25rem;
+    background-color: #00acd7;
+    border-radius: 5px;
+    padding: 1.5rem;
+}
+
+.header-text {
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 0 0.5rem;
+}
+.preview-text {
+    color: #fff;
+    font-size: 1.25rem;  
+    white-space: nowrap; 
+    width: 69%; 
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    box-sizing: border-box;
+    /* padding: 1rem; */
+}
+/* .content-section-topic{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 40px;
+    margin: auto auto 2% auto;
+    width: 50%;
+    height: fit-content;
+    background-color: aliceblue;
+} */
+.message-text {
     color: #fff;
     font-size: 1.5rem;
     background-color: #00acd7;
     border-radius: 35px;
     padding: 1rem;
 }
-.message-content:after {
+.info-text {
+    color: darkgrey;
+    font-size: 1rem;
+    padding: 1rem;
 }
+
 .footer a{
     color: white;
     font-weight: bold;
@@ -372,4 +476,19 @@ form{
 }
 .none{
     display: none;
+}
+.content-sections{
+    margin-top: 1vh;
+    margin-left: 0;
+    margin-right: 0;
+    background-color: rgba(63, 60, 60, 0.514);
+    width: 100%;
+    height: 50%;
+    border-radius: 3%;
+    display: flex;
+    flex-direction: column;
+}
+.content-sections p {
+    color: white;
+    text-align: center;
 }
